@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pooja Restaurant – Order direct</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAF8F5;--surface:#fff;--ink:#2A1620;--muted:#6E5B64;--brand:#5B1233;--on-brand:#fff;--accent:#F5A623;--on-accent:#2A1620;--line:#E8DFE2;--veg:#2E7D32;--non:#C62828;--chip:#F1E8EC;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1B0F15;--surface:#27161E;--ink:#F6ECEF;--muted:#B9A5AE;--brand:#7A1B47;--line:#3C2630;--chip:#33202A}}
+:root[data-theme="dark"]{--bg:#1B0F15;--surface:#27161E;--ink:#F6ECEF;--muted:#B9A5AE;--brand:#7A1B47;--line:#3C2630;--chip:#33202A}
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 Hind,system-ui,sans-serif;padding-bottom:96px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.wrap{max-width:720px;margin:0 auto}
+header{background:var(--brand);color:var(--on-brand);padding:22px 18px 20px}
+h1{font:800 34px/1.05 "Baloo 2",system-ui,sans-serif;margin:0}
+header p{margin:4px 0 12px;opacity:.85}
+.pill{display:inline-block;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:14px;padding:5px 12px;border-radius:99px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:var(--bg);border-bottom:1px solid var(--line)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 18px}
+.chip{flex:none;border:0;background:var(--chip);color:var(--ink);font:500 15px Hind,sans-serif;padding:8px 14px;border-radius:99px;cursor:pointer}
+.chip[aria-current="true"]{background:var(--brand);color:var(--on-brand)}
+h2{font:600 22px "Baloo 2",system-ui,sans-serif;margin:22px 18px 6px}
+.item{display:flex;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid var(--line)}
+.ph{flex:none;width:58px;height:58px;border-radius:14px;background:var(--chip);display:grid;place-items:center;font-size:28px}
+.info{flex:1;min-width:0}
+.nm{font-weight:600;display:flex;align-items:center;gap:7px}
+.dot{flex:none;width:12px;height:12px;border:2px solid var(--veg);display:grid;place-items:center;border-radius:3px}
+.dot::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--veg)}
+.dot.n{border-color:var(--non)}.dot.n::after{background:var(--non)}
+.ds{color:var(--muted);font-size:14px;margin:1px 0}
+.pr{font-weight:600}
+.add{border:2px solid var(--brand);background:var(--surface);color:var(--brand);font:600 15px Hind,sans-serif;padding:6px 20px;border-radius:10px;cursor:pointer}
+.step{display:inline-flex;align-items:center;background:var(--brand);color:var(--on-brand);border-radius:10px}
+.step button{border:0;background:none;color:inherit;font:600 20px Hind,sans-serif;width:34px;height:34px;cursor:pointer}
+.step span{min-width:20px;text-align:center;font-weight:600}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:none}
+#bar button{display:flex;justify-content:space-between;width:100%;max-width:720px;margin:0 auto;border:0;background:var(--accent);color:var(--on-accent);font:600 17px Hind,sans-serif;padding:14px 18px;border-radius:14px;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:30;display:none}
+#sh{position:absolute;left:0;right:0;bottom:0;max-height:92%;overflow:auto;background:var(--surface);border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));max-width:720px;margin:0 auto}
+#sh h3{font:600 22px "Baloo 2",system-ui,sans-serif;margin:0 0 6px;display:flex;justify-content:space-between;align-items:center}
+.x{border:0;background:var(--chip);color:var(--ink);width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer}
+.ln{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.tot{display:flex;justify-content:space-between;font-weight:600;font-size:18px;padding:12px 0}
+label{display:block;font-weight:600;font-size:14px;margin:10px 0 4px}
+input[type=text],input[type=tel],textarea{width:100%;font:400 16px Hind,sans-serif;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.pay{display:flex;gap:10px;margin-top:4px}
+.pay label{flex:1;margin:0;font-weight:500;border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;gap:8px;align-items:center}
+.loc{display:block;width:100%;margin-top:8px;border:2px solid var(--brand);background:var(--surface);color:var(--brand);font:600 15px Hind,sans-serif;padding:9px;border-radius:10px;cursor:pointer}
+.locs{color:var(--muted);font-size:13px;margin:6px 0 0;min-height:18px}
+.go{display:block;text-align:center;text-decoration:none;background:var(--veg);color:#fff;font:600 17px Hind,sans-serif;padding:14px;border-radius:12px;margin-top:14px}
+.go[aria-disabled="true"]{opacity:.45}
+.note{color:var(--muted);font-size:13px;margin:8px 0 0}
+.err{color:var(--non);font-size:14px;min-height:20px;margin:8px 0 0}
+.foot{padding:22px 18px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Pooja Restaurant</h1>
+  <p>North Indian and fast food in Jaunpur. Open 10am to 10pm.</p>
+  <span class="pill">Order direct and get it hot</span>
+</header>
+<nav><div class="chips" id="chips"></div></nav>
+<main id="menu"></main>
+<div class="foot">Menu and prices from the restaurant’s Zomato listing. Orders are sent to the restaurant on WhatsApp. T B Hospital Road, Line Bazar, Jaunpur.</div>
+</div>
+<div id="bar"><button id="open"><span id="cnt"></span><span id="sub"></span></button></div>
+<div id="ov"><div id="sh" role="dialog" aria-modal="true" aria-label="Your order">
+  <h3>Your order <button class="x" id="close" aria-label="Close">×</button></h3>
+  <div id="lines"></div>
+  <div class="tot"><span>Total</span><span id="tt"></span></div>
+  <label for="nm">Name</label><input type="text" id="nm" autocomplete="name">
+  <label for="ph">Phone number</label><input type="tel" id="ph" autocomplete="tel">
+  <label for="ad">Delivery address</label><textarea id="ad" rows="2" autocomplete="street-address"></textarea>
+  <button type="button" class="loc" id="loc">📍 Use my current location</button>
+  <p class="locs" id="locs" role="status">Optional. Your location is sent only with this order. Please still type your address and a landmark.</p>
+  <label>Payment</label>
+  <div class="pay">
+    <label><input type="radio" name="pm" value="UPI on delivery" checked> UPI</label>
+    <label><input type="radio" name="pm" value="Cash on delivery"> Cash</label>
+  </div>
+  <p class="note">Delivery charge is confirmed by the restaurant on WhatsApp.</p>
+  <p class="err" id="err" role="alert"></p>
+  <a class="go" id="go" href="#" target="_blank" rel="noopener" aria-disabled="true">Send order on WhatsApp</a>
+</div></div>
+<script>
+var WA="917007883416";
+var RAW=[
+["Soups","🍲",["Veg Clear Soup|110|1","Veg Noodles Soup|110|1","Veg Hot and Sour Soup|120|1","Veg Manchow Soup|120|1","Chicken Clear Soup|120|0","Chicken Manchow Soup|150|0","Chicken Hot and Sour Soup|140|0"]],
+["Starters","🍢",["Hara Bhara Kebab|150|1","Chilli Potato|130|1|🥔","Chilli Paneer|170|1","Veg Manchurian|170|1","Crispy Baby Corn|190|1","Chilli Mushroom|190|1|🍄","Chicken Lollipop (4 pieces)|380|0|🍗","Chilli Chicken|220|0|🍗","Chicken Fry (8 pieces)|380|0|🍗"]],
+["Main course","🍛",["Plain Dal|100|1|🍲","Dal Fry|120|1|🍲","Dal Tadka|160|1|🍲","Dal Maharani|150|1|🍲","Dal Handi|190|1|🍲","Jeera Aloo|90|1|🥔","Mix Veg|100|1|🥗","Paneer Butter Masala|120|1","Matar Paneer|110|1","Paneer Do Pyaza|120|1","Kadhai Paneer|110|1","Paneer Handi|110|1","Chilli Paneer Gravy|140|1","Shahi Paneer|140|1","Palak Paneer|140|1","Paneer Lababdar|170|1","Mushroom Handi|170|1|🍄","Mushroom Masala|170|1|🍄","Matar Mushroom Masala|160|1|🍄","Paneer Kali Mirch|140|1","Paneer Handi (2nd listing)|90|1","Matar Paneer (2nd listing)|180|1","Kadhai Paneer (2nd listing)|100|1","Egg Curry|130|0|🥚","Chicken Khada Masala|200|0|🍗","Chicken Do Pyaza|180|0|🍗","Chicken Handi|170|0|🍗","Kadhai Chicken|220|0|🍗","Butter Chicken Masala|230|0|🍗","Chicken Kali Mirch|200|0|🍗"]],
+["Breads","🫓",["Plain Tawa Roti|18|1|🫓|Whole wheat flour, tawa-cooked.","Butter Tawa Roti|25|1","Lachha Paratha|55|1","Aloo Paratha|70|1","Mixed Paratha|90|1","Paneer Paratha|100|1"]],
+["Rice and biryani","🍚",["Veg Biryani|200|1|🍛","Paneer Biryani|220|1|🍛","Veg Hyderabadi Biryani|270|1|🍛","Egg Dum Biryani|150|0|🍛","Chicken Dum Biryani|300|0|🍛","Plain Rice|90|1","Jeera Rice|150|1"]],
+["Fried rice and noodles","🍜",["Veg Fried Rice|140|1|🍚","Paneer Fried Rice|190|1|🍚","Manchurian Fried Rice|160|1|🍚","Mixed Fried Rice|200|1|🍚","Mushroom Fried Rice|210|1|🍚","Veg Noodles|100|1","Paneer Noodles|130|1","Mixed Noodles|180|1"]],
+["Sandwiches","🥪",["Veg Sandwich|70|1","Cheese Sandwich|90|1","Paneer Sandwich|100|1","Chicken Grilled Sandwich|120|0"]],
+["Roll","🌯",["Egg Roll|120|0"]],
+["Snacks","🍟",["French Fries|120|1","Veg Pakoda|130|1","Veg Cutlet|120|1","Chole Bhature|130|1","Paneer Pakoda|140|1","Veg Spring Roll|140|1","Chana Garlic Dry|170|1","Paneer Spring Roll|160|1","Chicken Spring Roll (8 pieces)|180|0"]],
+["Accompaniments","🥗",["Plain Curd|70|1|🥛","Plain Raita|80|1|🥛","Boondi Raita|100|1|🥛","Onion Salad|60|1","Green Salad|80|1","Papad Dry|45|1","Masala Papad|70|1"]],
+["Dessert","🍮",["Gulab Jamun|45|1"]],
+["Drinks","🥛",["Khara Lassi|70|1","Dry Fruit Lassi|80|1"]]
+];
+var M=RAW.map(function(g){return{c:g[0],i:g[2].map(function(r){var a=r.split("|");return[a[0],+a[1],+a[2],a[3]||g[1],a[4]||""]})}});
+var cart={};var loc=null;
+var $=function(i){return document.getElementById(i)};
+function money(n){return "₹"+n}
+function item(k){var p=k.split("-");return M[p[0]].i[p[1]]}
+function qty(k){return cart[k]||0}
+function ctl(k){var q=qty(k);return q?'<div class="step"><button data-d="-1" data-k="'+k+'" aria-label="Remove one">−</button><span>'+q+'</span><button data-d="1" data-k="'+k+'" aria-label="Add one">+</button></div>':'<button class="add" data-d="1" data-k="'+k+'">Add</button>'}
+function render(){
+  var h="",c="";
+  M.forEach(function(s,si){
+    h+='<section id="s'+si+'"><h2>'+s.c+'</h2>';
+    s.i.forEach(function(it,ii){var k=si+"-"+ii;
+      h+='<div class="item"><div class="ph" aria-hidden="true">'+it[3]+'</div><div class="info"><div class="nm">'+(it[2]==2?'':'<span class="dot'+(it[2]?"":" n")+'" title="'+(it[2]?"Vegetarian":"Non-vegetarian")+'"></span>')+it[0]+'</div>'+(it[4]?'<div class="ds">'+it[4]+'</div>':'')+'<div class="pr">'+money(it[1])+'</div></div><div>'+ctl(k)+'</div></div>'});
+    h+='</section>';
+  });
+  $("menu").innerHTML=h;
+  var n=0,t=0;Object.keys(cart).forEach(function(k){n+=cart[k];t+=cart[k]*item(k)[1]});
+  $("bar").style.display=n?"block":"none";
+  $("cnt").textContent=n+(n==1?" item":" items");$("sub").textContent=money(t)+" | View order";
+  return t;
+}
+function chips(){$("chips").innerHTML=M.map(function(s,i){return '<button class="chip" data-s="'+i+'"'+(i==0?' aria-current="true"':'')+'>'+s.c+'</button>'}).join("")}
+function sheet(){
+  var t=0,h="";
+  Object.keys(cart).forEach(function(k){var it=item(k);t+=cart[k]*it[1];
+    h+='<div class="ln"><span>'+it[0]+'<br><span class="ds">'+money(it[1])+' each</span></span>'+ctl(k)+'<span class="pr">'+money(cart[k]*it[1])+'</span></div>'});
+  $("lines").innerHTML=h;$("tt").textContent=money(t);
+  if(!t)$("ov").style.display="none";
+  link();
+}
+function msg(){
+  var L=["*New order from website*",""],t=0;
+  Object.keys(cart).forEach(function(k){var it=item(k);t+=cart[k]*it[1];L.push(cart[k]+" x "+it[0]+" = "+money(cart[k]*it[1]))});
+  L.push("","Total: "+money(t)+" (delivery extra)","Payment: "+document.querySelector('input[name=pm]:checked').value,"","Name: "+$("nm").value.trim(),"Phone: "+$("ph").value.trim(),"Address: "+$("ad").value.trim());
+  if(loc)L.push("Location: https://maps.google.com/?q="+loc.lat+","+loc.lng);
+  return L.join("\n");
+}
+function ready(){return $("nm").value.trim()&&/^[0-9+\s-]{10,15}$/.test($("ph").value.trim())&&$("ad").value.trim()}
+function link(){var ok=ready();$("go").setAttribute("aria-disabled",ok?"false":"true");$("go").href=ok?"https://wa.me/"+WA+"?text="+encodeURIComponent(msg()):"#";if(ok)$("err").textContent=""}
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-k]");
+  if(b){var k=b.dataset.k,d=+b.dataset.d,q=qty(k)+d;if(q>0)cart[k]=q;else delete cart[k];render();if($("ov").style.display=="block")sheet();return}
+  var c=e.target.closest("[data-s]");
+  if(c){document.querySelectorAll(".chip").forEach(function(x){x.removeAttribute("aria-current")});c.setAttribute("aria-current","true");$("s"+c.dataset.s).scrollIntoView({behavior:"smooth"})}
+});
+$("open").onclick=function(){$("ov").style.display="block";sheet()};
+$("close").onclick=function(){$("ov").style.display="none"};
+$("ov").onclick=function(e){if(e.target==$("ov"))$("ov").style.display="none"};
+["nm","ph","ad"].forEach(function(i){$(i).addEventListener("input",link)});
+document.querySelectorAll("input[name=pm]").forEach(function(r){r.addEventListener("change",link)});
+$("go").onclick=function(e){if(!ready()){e.preventDefault();$("err").textContent="Enter your name, a valid phone number and your delivery address."}};
+$("loc").onclick=function(){
+  var st=$("locs"),bt=$("loc");
+  if(loc){loc=null;bt.textContent="📍 Use my current location";st.textContent="Location removed. Your typed address will be used.";link();return}
+  if(!navigator.geolocation){st.textContent="This browser can’t share location. Please type your address.";return}
+  st.textContent="Getting your location. Allow access when your phone asks.";bt.disabled=true;
+  navigator.geolocation.getCurrentPosition(function(p){
+    loc={lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5)};
+    bt.disabled=false;bt.textContent="Remove my location";
+    st.textContent="Location added (accurate to about "+Math.round(p.coords.accuracy)+" m). Please still type your address and a landmark.";link();
+  },function(er){
+    bt.disabled=false;
+    st.textContent=er.code==1?"Location access was blocked. Allow it in your browser settings, or type your address.":er.code==3?"Getting your location took too long. Try again, or type your address.":"Couldn’t get your location. Please type your address.";
+  },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+};
+chips();render();
+</script>
+</body>
+</html>
