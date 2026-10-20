@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { ThemeToggle } from '../../components/ThemeToggle';
 
 type Settings = {
   id?: string;
@@ -73,6 +74,14 @@ type GalleryImage = {
   image_url: string;
   caption: string;
   sort_order?: number;
+};
+
+type NavItem = {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  badge?: number;
+  badgeUrgent?: boolean;
 };
 
 const emptySettings: Settings = {
@@ -289,17 +298,92 @@ export default function Admin() {
     setIsMobileNavOpen(false);
   };
 
+  // Unified side navigation items list
+  const navItems: NavItem[] = useMemo(
+    () => [
+      {
+        id: 'active-members',
+        label: 'Active Members',
+        icon: <IconUsers />,
+        badge: summary.active.length,
+      },
+      {
+        id: 'visitors',
+        label: 'Visitors',
+        icon: <IconVisitor />,
+        badge: visitors.length,
+      },
+      {
+        id: 'expiring-soon',
+        label: 'Plan Expiring Soon',
+        icon: <IconAlert />,
+        badge: summary.expiring.length,
+        badgeUrgent: summary.expiring.length > 0,
+      },
+      {
+        id: 'trainers',
+        label: 'Trainers',
+        icon: <IconCoach />,
+        badge: trainers.length,
+      },
+      {
+        id: 'membership-plans',
+        label: 'Membership Plans',
+        icon: <IconCreditCard />,
+        badge: plans.length,
+      },
+      {
+        id: 'opening-hours',
+        label: 'Opening Hours',
+        icon: <IconClock />,
+        badge: hours.length,
+      },
+      {
+        id: 'gym-details',
+        label: 'Gym Details',
+        icon: <IconBuilding />,
+      },
+      {
+        id: 'gym-equipments',
+        label: 'Gym Equipments',
+        icon: <IconDumbbell />,
+        badge: equipment.length,
+      },
+      {
+        id: 'services',
+        label: 'Services',
+        icon: <IconZap />,
+        badge: services.length,
+      },
+      {
+        id: 'facilities-gallery',
+        label: 'Facilities & Gallery',
+        icon: <IconGrid />,
+      },
+    ],
+    [
+      summary.active.length,
+      summary.expiring.length,
+      visitors.length,
+      trainers.length,
+      plans.length,
+      hours.length,
+      equipment.length,
+      services.length,
+    ]
+  );
+
   if (!supabase) {
     return (
-      <main className="min-h-screen grid place-items-center p-6 bg-[#101321]">
-        <div className="card max-w-lg p-8">
+      <main className="admin-shell grid place-items-center p-6">
+        <div className="admin-card max-w-lg p-8">
           <p className="eyebrow">Setup needed</p>
           <h1 className="display mt-3 text-4xl">CONNECT SUPABASE.</h1>
-          <p className="mt-5 leading-relaxed text-zinc-300">
+          <p className="mt-5 leading-relaxed opacity-80">
             Copy <code>.env.local.example</code> to <code>.env.local</code>, add
             your project URL and anonymous key, then restart the site.
           </p>
-          <a href="/" className="mt-7 inline-block text-lime">
+          <a href="/" className="mt-7 inline-block text-lime font-bold">
             ← Back to site
           </a>
         </div>
@@ -309,62 +393,70 @@ export default function Admin() {
 
   if (!loggedIn) {
     return (
-      <main className="min-h-screen grid place-items-center p-6 bg-[#101321]">
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-            if (!supabase) return;
-
-            const { error } = await supabase.auth.signInWithPassword({
-              email,
-              password,
-            });
-
-            if (error) {
-              setNotice(error.message);
-            } else {
-              setLoggedIn(true);
-              loadAllData();
-            }
-          }}
-          className="card w-full max-w-md p-8"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <span className="brand-mark">✦</span>
-            <span className="eyebrow">Iron Peak Admin</span>
+      <main className="admin-shell grid place-items-center p-6">
+        <div className="w-full max-w-md">
+          <div className="flex justify-end mb-4">
+            <ThemeToggle showLabel />
           </div>
-          <h1 className="display mt-1 text-4xl">WELCOME BACK.</h1>
-          <p className="mt-2 text-xs text-zinc-400">
-            Sign in with your owner credentials to manage the gym.
-          </p>
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              if (!supabase) return;
 
-          <div className="mt-8 space-y-4">
-            <Field
-              label="Email"
-              type="email"
-              value={email}
-              onChange={setEmail}
-              required
-            />
-            <Field
-              label="Password"
-              type="password"
-              value={password}
-              onChange={setPassword}
-              required
-            />
-          </div>
+              const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+              });
 
-          {notice && <p className="mt-3 text-sm text-red-300">{notice}</p>}
+              if (error) {
+                setNotice(error.message);
+              } else {
+                setLoggedIn(true);
+                loadAllData();
+              }
+            }}
+            className="admin-card w-full p-8"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="brand-mark">✦</span>
+              <span className="eyebrow">Iron Peak Admin</span>
+            </div>
+            <h1 className="display mt-1 text-4xl">WELCOME BACK.</h1>
+            <p className="mt-2 text-xs opacity-75">
+              Sign in with your owner credentials to manage the gym.
+            </p>
 
-          <button className="mt-6 w-full rounded-lg bg-lime py-3 font-bold text-ink">
-            Log in to console
-          </button>
+            <div className="mt-8 space-y-4">
+              <Field
+                label="Email"
+                type="email"
+                value={email}
+                onChange={setEmail}
+                required
+              />
+              <Field
+                label="Password"
+                type="password"
+                value={password}
+                onChange={setPassword}
+                required
+              />
+            </div>
 
-          <a href="/" className="mt-5 block text-center text-sm text-zinc-400 hover:text-white">
-            ← Back to public site
-          </a>
-        </form>
+            {notice && <p className="mt-3 text-sm text-red-500 font-medium">{notice}</p>}
+
+            <button className="mt-6 w-full rounded-lg bg-lime py-3 font-bold text-ink hover:opacity-90 transition">
+              Log in to console
+            </button>
+
+            <a
+              href="/"
+              className="mt-5 block text-center text-sm opacity-70 hover:text-lime transition"
+            >
+              ← Back to public site
+            </a>
+          </form>
+        </div>
       </main>
     );
   }
@@ -386,296 +478,53 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#101321] text-white">
-      {/* ===================== SIDE NAVIGATION BAR ===================== */}
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-64 xl:w-72 flex-col border-r border-white/10 bg-[#0c0f1d]/95 backdrop-blur-xl z-30">
-        {/* Brand / Logo */}
-        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="brand-mark">✦</span>
-            <div>
-              <b className="tracking-tight text-sm text-white block">IRON PEAK</b>
-              <span className="eyebrow text-[9px] text-lime">Owner Console</span>
-            </div>
-          </div>
-          <a
-            href="/"
-            title="View public site"
-            className="text-xs text-zinc-400 hover:text-lime transition"
-          >
-            ↗
-          </a>
-        </div>
-
-        {/* Navigation Links */}
-        <nav className="flex-1 overflow-y-auto px-4 py-5 space-y-6">
-          {/* Group 1: Members */}
-          <div>
-            <div className="px-3 pb-2 text-[10px] font-mono tracking-wider uppercase text-zinc-400">
-              Members
-            </div>
-            <div className="space-y-1">
-              <NavButton
-                active={activeSection === 'active-members'}
-                onClick={() => scrollTo('active-members')}
-                icon={<IconUsers />}
-                label="Active Members"
-                badge={summary.active.length}
-              />
-              <NavButton
-                active={activeSection === 'visitors'}
-                onClick={() => scrollTo('visitors')}
-                icon={<IconVisitor />}
-                label="Visitors"
-                badge={visitors.length}
-              />
-              <NavButton
-                active={activeSection === 'expiring-soon'}
-                onClick={() => scrollTo('expiring-soon')}
-                icon={<IconAlert />}
-                label="Plan Expiring Soon"
-                badge={summary.expiring.length}
-                badgeUrgent={summary.expiring.length > 0}
-              />
-            </div>
-          </div>
-
-          {/* Group 2: Floor & Schedule */}
-          <div>
-            <div className="px-3 pb-2 text-[10px] font-mono tracking-wider uppercase text-zinc-400">
-              Floor & Schedule
-            </div>
-            <div className="space-y-1">
-              <NavButton
-                active={activeSection === 'trainers'}
-                onClick={() => scrollTo('trainers')}
-                icon={<IconCoach />}
-                label="Trainers"
-                badge={trainers.length}
-              />
-              <NavButton
-                active={activeSection === 'membership-plans'}
-                onClick={() => scrollTo('membership-plans')}
-                icon={<IconCreditCard />}
-                label="Membership Plans"
-                badge={plans.length}
-              />
-              <NavButton
-                active={activeSection === 'opening-hours'}
-                onClick={() => scrollTo('opening-hours')}
-                icon={<IconClock />}
-                label="Opening Hours"
-                badge={hours.length}
-              />
-            </div>
-          </div>
-
-          {/* Group 3: Settings */}
-          <div>
-            <div className="px-3 pb-2 text-[10px] font-mono tracking-wider uppercase text-zinc-400">
-              Settings
-            </div>
-            <div className="space-y-1">
-              <NavButton
-                active={activeSection === 'gym-details'}
-                onClick={() => scrollTo('gym-details')}
-                icon={<IconBuilding />}
-                label="Gym Details"
-              />
-              <NavButton
-                active={activeSection === 'gym-equipments'}
-                onClick={() => scrollTo('gym-equipments')}
-                icon={<IconDumbbell />}
-                label="Gym Equipments"
-                badge={equipment.length}
-              />
-              <NavButton
-                active={activeSection === 'services'}
-                onClick={() => scrollTo('services')}
-                icon={<IconZap />}
-                label="Services"
-                badge={services.length}
-              />
-              <NavButton
-                active={activeSection === 'facilities-gallery'}
-                onClick={() => scrollTo('facilities-gallery')}
-                icon={<IconGrid />}
-                label="Facilities & Gallery"
-              />
-            </div>
-          </div>
-        </nav>
-
-        {/* Footer in Sidebar */}
-        <div className="p-4 border-t border-white/10 space-y-2">
-          <a
-            href="/"
-            className="flex items-center justify-between w-full px-3 py-2 text-xs text-zinc-400 hover:text-white rounded-lg hover:bg-white/5 transition"
-          >
-            <span>View public site</span>
-            <span>↗</span>
-          </a>
-          <button
-            onClick={() => {
-              if (!supabase) return;
-              supabase.auth.signOut().then(() => setLoggedIn(false));
-            }}
-            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-300 hover:text-red-200 rounded-lg hover:bg-red-500/10 transition"
-          >
-            <IconLogout />
-            <span>Log out</span>
-          </button>
-        </div>
+    <div className="admin-shell">
+      {/* ===================== UNIFIED SIDE NAVIGATION BAR (DESKTOP) ===================== */}
+      <aside className="admin-sidebar hidden lg:flex fixed inset-y-0 left-0 w-64 xl:w-72 flex-col border-r z-30">
+        <UnifiedSideNavContent
+          navItems={navItems}
+          activeSection={activeSection}
+          onSelectSection={scrollTo}
+          onSignOut={() => {
+            if (!supabase) return;
+            supabase.auth.signOut().then(() => setLoggedIn(false));
+          }}
+        />
       </aside>
 
-      {/* Mobile Top Bar */}
-      <header className="lg:hidden sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#0c0f1d]/95 backdrop-blur-md px-4 py-3">
+      {/* ===================== MOBILE TOP BAR ===================== */}
+      <header className="admin-header lg:hidden sticky top-0 z-40 flex items-center justify-between border-b px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="brand-mark text-xs w-6 h-6">✦</span>
           <b className="tracking-tight text-sm">IRON PEAK</b>
           <span className="text-[10px] text-lime font-mono">/ OWNER</span>
         </div>
-        <button
-          onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
-          className="rounded-lg border border-white/10 bg-white/5 p-2 text-zinc-300 hover:text-white"
-          aria-label="Toggle navigation menu"
-        >
-          {isMobileNavOpen ? '✕' : '☰'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+            className="rounded-lg border admin-table-border p-2 opacity-80 hover:opacity-100"
+            aria-label="Toggle navigation menu"
+          >
+            {isMobileNavOpen ? '✕' : '☰'}
+          </button>
+        </div>
       </header>
 
       {/* Mobile Nav Drawer */}
       {isMobileNavOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black/80 backdrop-blur-sm">
-          <div className="fixed inset-y-0 left-0 w-72 bg-[#0c0f1d] border-r border-white/10 p-5 flex flex-col justify-between overflow-y-auto">
-            <div>
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <span className="brand-mark">✦</span>
-                  <b className="text-sm">IRON PEAK</b>
-                </div>
-                <button
-                  onClick={() => setIsMobileNavOpen(false)}
-                  className="text-zinc-400 hover:text-white"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="mt-5 space-y-6">
-                <div>
-                  <p className="px-3 pb-1 text-[10px] font-mono uppercase text-zinc-400">
-                    Members
-                  </p>
-                  <div className="space-y-1">
-                    <NavButton
-                      active={activeSection === 'active-members'}
-                      onClick={() => scrollTo('active-members')}
-                      icon={<IconUsers />}
-                      label="Active Members"
-                      badge={summary.active.length}
-                    />
-                    <NavButton
-                      active={activeSection === 'visitors'}
-                      onClick={() => scrollTo('visitors')}
-                      icon={<IconVisitor />}
-                      label="Visitors"
-                      badge={visitors.length}
-                    />
-                    <NavButton
-                      active={activeSection === 'expiring-soon'}
-                      onClick={() => scrollTo('expiring-soon')}
-                      icon={<IconAlert />}
-                      label="Plan Expiring Soon"
-                      badge={summary.expiring.length}
-                      badgeUrgent={summary.expiring.length > 0}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <p className="px-3 pb-1 text-[10px] font-mono uppercase text-zinc-400">
-                    Floor & Schedule
-                  </p>
-                  <div className="space-y-1">
-                    <NavButton
-                      active={activeSection === 'trainers'}
-                      onClick={() => scrollTo('trainers')}
-                      icon={<IconCoach />}
-                      label="Trainers"
-                      badge={trainers.length}
-                    />
-                    <NavButton
-                      active={activeSection === 'membership-plans'}
-                      onClick={() => scrollTo('membership-plans')}
-                      icon={<IconCreditCard />}
-                      label="Membership Plans"
-                      badge={plans.length}
-                    />
-                    <NavButton
-                      active={activeSection === 'opening-hours'}
-                      onClick={() => scrollTo('opening-hours')}
-                      icon={<IconClock />}
-                      label="Opening Hours"
-                      badge={hours.length}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <p className="px-3 pb-1 text-[10px] font-mono uppercase text-zinc-400">
-                    Settings
-                  </p>
-                  <div className="space-y-1">
-                    <NavButton
-                      active={activeSection === 'gym-details'}
-                      onClick={() => scrollTo('gym-details')}
-                      icon={<IconBuilding />}
-                      label="Gym Details"
-                    />
-                    <NavButton
-                      active={activeSection === 'gym-equipments'}
-                      onClick={() => scrollTo('gym-equipments')}
-                      icon={<IconDumbbell />}
-                      label="Gym Equipments"
-                      badge={equipment.length}
-                    />
-                    <NavButton
-                      active={activeSection === 'services'}
-                      onClick={() => scrollTo('services')}
-                      icon={<IconZap />}
-                      label="Services"
-                      badge={services.length}
-                    />
-                    <NavButton
-                      active={activeSection === 'facilities-gallery'}
-                      onClick={() => scrollTo('facilities-gallery')}
-                      icon={<IconGrid />}
-                      label="Facilities & Gallery"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-5 border-t border-white/10 space-y-2">
-              <a
-                href="/"
-                className="block text-center py-2 text-xs text-zinc-400 hover:text-white bg-white/5 rounded-lg"
-              >
-                View public site ↗
-              </a>
-              <button
-                onClick={() => {
-                  if (!supabase) return;
-                  supabase.auth.signOut().then(() => setLoggedIn(false));
-                }}
-                className="w-full py-2 text-xs text-red-300 hover:bg-red-500/10 rounded-lg text-center"
-              >
-                Log out
-              </button>
-            </div>
+        <div className="lg:hidden fixed inset-0 z-40 bg-black/70 backdrop-blur-sm">
+          <div className="admin-sidebar fixed inset-y-0 left-0 w-72 border-r p-0 flex flex-col justify-between overflow-y-auto">
+            <UnifiedSideNavContent
+              navItems={navItems}
+              activeSection={activeSection}
+              onSelectSection={scrollTo}
+              onCloseMobile={() => setIsMobileNavOpen(false)}
+              onSignOut={() => {
+                if (!supabase) return;
+                supabase.auth.signOut().then(() => setLoggedIn(false));
+              }}
+            />
           </div>
         </div>
       )}
@@ -683,20 +532,21 @@ export default function Admin() {
       {/* ===================== MAIN CONTENT CANVAS ===================== */}
       <main className="lg:pl-64 xl:pl-72 min-h-screen">
         {/* Top Header */}
-        <div className="border-b border-white/10 bg-[#0e1222]/80 backdrop-blur-md px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-4">
+        <div className="admin-header border-b px-6 lg:px-10 py-5 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="eyebrow">Owner Dashboard</p>
-            <h1 className="display text-3xl sm:text-4xl text-white">RUN THE FLOOR.</h1>
+            <h1 className="display text-3xl sm:text-4xl">RUN THE FLOOR.</h1>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-block text-xs text-zinc-400">
-              Welcome, <span className="text-white">{email || 'Gym Owner'}</span>
+            <span className="hidden sm:inline-block text-xs opacity-75">
+              Welcome, <span className="font-semibold">{email || 'Gym Owner'}</span>
             </span>
+            <ThemeToggle showLabel />
             <a
               href="/"
               target="_blank"
               rel="noreferrer"
-              className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-white/10 transition"
+              className="rounded-lg border admin-table-border px-3 py-1.5 text-xs font-semibold opacity-80 hover:opacity-100 hover:border-lime transition"
             >
               Public Site ↗
             </a>
@@ -710,7 +560,7 @@ export default function Admin() {
               <span>{notice}</span>
               <button
                 onClick={() => setNotice('')}
-                className="text-xs font-bold text-lime hover:underline"
+                className="text-xs font-bold text-lime hover:underline cursor-pointer"
               >
                 Dismiss
               </button>
@@ -746,8 +596,8 @@ export default function Admin() {
           </section>
 
           {/* ================= SECTION 1: ACTIVE MEMBERS ================= */}
-          <section id="active-members" className="scroll-mt-6 card overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 p-6">
+          <section id="active-members" className="scroll-mt-6 admin-card overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b admin-table-border p-6">
               <div>
                 <p className="eyebrow">Members</p>
                 <div className="flex items-center gap-3">
@@ -756,7 +606,7 @@ export default function Admin() {
                     {filteredActiveMembers.length} active
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-zinc-400">
+                <p className="mt-1 text-xs opacity-75">
                   Current members with valid subscriptions
                 </p>
               </div>
@@ -767,15 +617,15 @@ export default function Admin() {
                   placeholder="Search members..."
                   value={memberSearch}
                   onChange={(e) => setMemberSearch(e.target.value)}
-                  className="!w-44 sm:!w-60 !py-2 !px-3 !text-xs !bg-[#131728]"
+                  className="admin-input !w-44 sm:!w-60 !py-2 !px-3 !text-xs rounded-lg"
                 />
                 <button
                   type="button"
                   onClick={() => setShowAddMember((prev) => !prev)}
                   className={`rounded-lg px-4 py-2 text-xs font-bold transition flex items-center gap-1.5 ${
                     showAddMember
-                      ? 'bg-white/20 text-white'
-                      : 'bg-lime text-ink hover:bg-white'
+                      ? 'admin-tag opacity-90'
+                      : 'bg-lime text-ink hover:opacity-90'
                   }`}
                 >
                   {showAddMember ? '✕ Close Form' : '+ Add Member'}
@@ -785,7 +635,7 @@ export default function Admin() {
 
             {/* "Add Member option on top of Active Member List table" */}
             {showAddMember && (
-              <div className="border-b border-white/10 bg-black/25 p-6 animate-fadeIn">
+              <div className="border-b admin-card-inner p-6 animate-fadeIn">
                 <MemberForm
                   onSaved={async () => {
                     await loadAllData();
@@ -799,7 +649,7 @@ export default function Admin() {
 
             {/* Active Members Table */}
             {filteredActiveMembers.length === 0 ? (
-              <div className="p-8 text-center text-sm text-zinc-400">
+              <div className="p-8 text-center text-sm opacity-70">
                 {memberSearch
                   ? `No active members matching "${memberSearch}".`
                   : 'No active members registered yet. Click "+ Add Member" above to record the first one.'}
@@ -807,7 +657,7 @@ export default function Admin() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[650px] text-left text-sm">
-                  <thead className="bg-white/5 text-xs uppercase tracking-wider text-zinc-400">
+                  <thead className="admin-table-head text-xs uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-3.5">Member</th>
                       <th className="px-4 py-3.5">Plan</th>
@@ -817,28 +667,28 @@ export default function Admin() {
                       <th className="px-4 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y admin-table-border">
                     {filteredActiveMembers.map((member) => {
                       const daysLeft = getDaysRemaining(member.plan_expiry);
                       return (
-                        <tr key={member.id} className="hover:bg-white/[0.02] transition">
+                        <tr key={member.id} className="admin-table-row transition">
                           <td className="px-6 py-4">
-                            <b className="text-white block">{member.name}</b>
-                            <span className="text-xs text-zinc-400 font-mono">
+                            <b className="block">{member.name}</b>
+                            <span className="text-xs opacity-70 font-mono">
                               {member.mobile}
                             </span>
                             {member.notes && (
-                              <p className="text-[11px] text-zinc-400 mt-0.5 line-clamp-1 italic">
+                              <p className="text-[11px] opacity-70 mt-0.5 line-clamp-1 italic">
                                 Note: {member.notes}
                               </p>
                             )}
                           </td>
                           <td className="px-4 py-4">
-                            <span className="inline-block rounded-md bg-white/10 px-2.5 py-1 text-xs font-semibold">
+                            <span className="admin-tag inline-block rounded-md px-2.5 py-1 text-xs font-semibold">
                               {member.plan_name}
                             </span>
                           </td>
-                          <td className="px-4 py-4 text-xs text-zinc-400">
+                          <td className="px-4 py-4 text-xs opacity-70">
                             {dateLabel(member.join_date)}
                           </td>
                           <td className="px-4 py-4">
@@ -849,7 +699,7 @@ export default function Admin() {
                               className={`text-[10px] font-mono ${
                                 daysLeft <= 7
                                   ? 'text-lime font-bold'
-                                  : 'text-zinc-400'
+                                  : 'opacity-70'
                               }`}
                             >
                               {daysLeft === 0
@@ -874,7 +724,7 @@ export default function Admin() {
                                 await loadAllData();
                                 setNotice('Member record removed.');
                               }}
-                              className="text-xs text-red-300 hover:text-red-200 transition"
+                              className="text-xs text-red-500 hover:underline transition"
                             >
                               Remove
                             </button>
@@ -889,17 +739,17 @@ export default function Admin() {
           </section>
 
           {/* ================= SECTION 2: VISITORS ================= */}
-          <section id="visitors" className="scroll-mt-6 card overflow-hidden">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 p-6">
+          <section id="visitors" className="scroll-mt-6 admin-card overflow-hidden">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b admin-table-border p-6">
               <div>
                 <p className="eyebrow">Walk-in register</p>
                 <div className="flex items-center gap-3">
                   <h2 className="text-2xl font-bold">Visitors</h2>
-                  <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-zinc-300">
+                  <span className="admin-tag rounded-full px-2.5 py-0.5 text-xs font-semibold">
                     {filteredVisitors.length} recorded
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-zinc-400">
+                <p className="mt-1 text-xs opacity-75">
                   Track walk-ins, gym enquiries, and prospective members
                 </p>
               </div>
@@ -910,15 +760,15 @@ export default function Admin() {
                   placeholder="Search visitors..."
                   value={visitorSearch}
                   onChange={(e) => setVisitorSearch(e.target.value)}
-                  className="!w-44 sm:!w-60 !py-2 !px-3 !text-xs !bg-[#131728]"
+                  className="admin-input !w-44 sm:!w-60 !py-2 !px-3 !text-xs rounded-lg"
                 />
                 <button
                   type="button"
                   onClick={() => setShowAddVisitor((prev) => !prev)}
                   className={`rounded-lg px-4 py-2 text-xs font-bold transition flex items-center gap-1.5 ${
                     showAddVisitor
-                      ? 'bg-white/20 text-white'
-                      : 'bg-white text-ink hover:bg-lime'
+                      ? 'admin-tag opacity-90'
+                      : 'bg-lime text-ink hover:opacity-90'
                   }`}
                 >
                   {showAddVisitor ? '✕ Close Form' : '+ Add Visitor'}
@@ -928,7 +778,7 @@ export default function Admin() {
 
             {/* "Add Visitor option on top of Visitors List table" */}
             {showAddVisitor && (
-              <div className="border-b border-white/10 bg-black/25 p-6 animate-fadeIn">
+              <div className="border-b admin-card-inner p-6 animate-fadeIn">
                 <VisitorForm
                   onSaved={async () => {
                     await loadAllData();
@@ -942,7 +792,7 @@ export default function Admin() {
 
             {/* Visitors Table */}
             {filteredVisitors.length === 0 ? (
-              <div className="p-8 text-center text-sm text-zinc-400">
+              <div className="p-8 text-center text-sm opacity-70">
                 {visitorSearch
                   ? `No visitors matching "${visitorSearch}".`
                   : 'No visitors recorded yet. Click "+ Add Visitor" above to register a walk-in.'}
@@ -950,7 +800,7 @@ export default function Admin() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[700px] text-left text-sm">
-                  <thead className="bg-white/5 text-xs uppercase tracking-wider text-zinc-400">
+                  <thead className="admin-table-head text-xs uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-3.5">Visitor</th>
                       <th className="px-4 py-3.5">Visited Date</th>
@@ -960,33 +810,33 @@ export default function Admin() {
                       <th className="px-4 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y admin-table-border">
                     {filteredVisitors.map((visitor) => (
-                      <tr key={visitor.id} className="hover:bg-white/[0.02] transition">
+                      <tr key={visitor.id} className="admin-table-row transition">
                         <td className="px-6 py-4">
-                          <b className="text-white block">{visitor.name}</b>
-                          <span className="text-xs text-zinc-400 font-mono">
+                          <b className="block">{visitor.name}</b>
+                          <span className="text-xs opacity-70 font-mono">
                             {visitor.mobile || 'No phone'}
                           </span>
                         </td>
-                        <td className="px-4 py-4 text-xs text-zinc-400">
+                        <td className="px-4 py-4 text-xs opacity-70">
                           {dateLabel(visitor.visit_date)}
                         </td>
                         <td className="px-4 py-4">
-                          <span className="rounded bg-white/10 px-2 py-0.5 text-xs">
+                          <span className="admin-tag rounded px-2 py-0.5 text-xs font-medium">
                             {visitor.purpose}
                           </span>
                         </td>
                         <td className="px-4 py-4 text-xs">
                           {visitor.follow_up_date ? (
-                            <span className="text-lime font-mono">
+                            <span className="text-lime font-mono font-bold">
                               {dateLabel(visitor.follow_up_date)}
                             </span>
                           ) : (
-                            <span className="text-zinc-400">—</span>
+                            <span className="opacity-50">—</span>
                           )}
                         </td>
-                        <td className="px-4 py-4 text-xs text-zinc-400 max-w-[200px] truncate">
+                        <td className="px-4 py-4 text-xs opacity-70 max-w-[200px] truncate">
                           {visitor.notes || '—'}
                         </td>
                         <td className="px-4 py-4 text-right">
@@ -1001,7 +851,7 @@ export default function Admin() {
                               await loadAllData();
                               setNotice('Visitor record removed.');
                             }}
-                            className="text-xs text-red-300 hover:text-red-200 transition"
+                            className="text-xs text-red-500 hover:underline transition"
                           >
                             Remove
                           </button>
@@ -1015,8 +865,8 @@ export default function Admin() {
           </section>
 
           {/* ================= SECTION 3: PLAN EXPIRING SOON ================= */}
-          <section id="expiring-soon" className="scroll-mt-6 card overflow-hidden border-lime/30">
-            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 p-6 bg-lime/[0.03]">
+          <section id="expiring-soon" className="scroll-mt-6 admin-card overflow-hidden border-lime/40">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b admin-table-border p-6 bg-lime/[0.04]">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-lime animate-pulse" />
@@ -1028,20 +878,20 @@ export default function Admin() {
                     {summary.expiring.length} due
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-zinc-400">
+                <p className="mt-1 text-xs opacity-75">
                   Memberships expiring within the next 7 days — reach out for renewal
                 </p>
               </div>
             </div>
 
             {summary.expiring.length === 0 ? (
-              <div className="p-8 text-center text-sm text-zinc-400">
+              <div className="p-8 text-center text-sm opacity-70">
                 ✨ All memberships are well ahead of renewal. No plans expire within the next 7 days.
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[650px] text-left text-sm">
-                  <thead className="bg-white/5 text-xs uppercase tracking-wider text-zinc-400">
+                  <thead className="admin-table-head text-xs uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-3.5">Member</th>
                       <th className="px-4 py-3.5">Plan</th>
@@ -1051,19 +901,19 @@ export default function Admin() {
                       <th className="px-4 py-3.5 text-right">Quick Contact</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y admin-table-border">
                     {summary.expiring.map((member) => {
                       const daysLeft = getDaysRemaining(member.plan_expiry);
                       return (
-                        <tr key={member.id} className="hover:bg-white/[0.02] transition">
+                        <tr key={member.id} className="admin-table-row transition">
                           <td className="px-6 py-4">
-                            <b className="text-white block">{member.name}</b>
-                            <span className="text-xs text-zinc-400 font-mono">
+                            <b className="block">{member.name}</b>
+                            <span className="text-xs opacity-70 font-mono">
                               {member.mobile}
                             </span>
                           </td>
                           <td className="px-4 py-4">
-                            <span className="rounded bg-white/10 px-2.5 py-1 text-xs font-semibold">
+                            <span className="admin-tag rounded px-2.5 py-1 text-xs font-semibold">
                               {member.plan_name}
                             </span>
                           </td>
@@ -1086,12 +936,12 @@ export default function Admin() {
                             {member.mobile ? (
                               <a
                                 href={`tel:${member.mobile}`}
-                                className="inline-block rounded bg-lime px-3 py-1.5 text-xs font-bold text-ink hover:bg-white transition"
+                                className="inline-block rounded bg-lime px-3 py-1.5 text-xs font-bold text-ink hover:opacity-90 transition"
                               >
                                 Call Member
                               </a>
                             ) : (
-                              <span className="text-xs text-zinc-400">No mobile</span>
+                              <span className="text-xs opacity-50">No mobile</span>
                             )}
                           </td>
                         </tr>
@@ -1104,7 +954,7 @@ export default function Admin() {
           </section>
 
           {/* ================= SECTION 4: TRAINERS ================= */}
-          <section id="trainers" className="scroll-mt-6 card overflow-hidden">
+          <section id="trainers" className="scroll-mt-6 admin-card overflow-hidden">
             <TrainersSection
               trainers={trainers}
               onUpdated={async () => {
@@ -1115,7 +965,7 @@ export default function Admin() {
           </section>
 
           {/* ================= SECTION 5: MEMBERSHIP PLANS ================= */}
-          <section id="membership-plans" className="scroll-mt-6 card overflow-hidden">
+          <section id="membership-plans" className="scroll-mt-6 admin-card overflow-hidden">
             <MembershipPlansSection
               plans={plans}
               onUpdated={async () => {
@@ -1126,7 +976,7 @@ export default function Admin() {
           </section>
 
           {/* ================= SECTION 6: OPENING HOURS ================= */}
-          <section id="opening-hours" className="scroll-mt-6 card overflow-hidden">
+          <section id="opening-hours" className="scroll-mt-6 admin-card overflow-hidden">
             <OpeningHoursSection
               hours={hours}
               onUpdated={async () => {
@@ -1138,21 +988,21 @@ export default function Admin() {
 
           {/* ================= SECTION 7: SETTINGS ================= */}
           <div className="space-y-8 pt-4">
-            <div className="border-b border-white/10 pb-4">
+            <div className="border-b admin-table-border pb-4">
               <p className="eyebrow">Public Site & Operations</p>
               <h2 className="display text-3xl">SETTINGS.</h2>
-              <p className="mt-1 text-sm text-zinc-400">
+              <p className="mt-1 text-sm opacity-75">
                 Configure your public gym presence, equipment lists, and offered fitness services.
               </p>
             </div>
 
             {/* Sub-section: Gym Details */}
-            <section id="gym-details" className="scroll-mt-6 card p-6">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+            <section id="gym-details" className="scroll-mt-6 admin-card p-6">
+              <div className="flex items-center justify-between pb-4 border-b admin-table-border">
                 <div>
                   <p className="eyebrow">Brand & Contact</p>
                   <h3 className="text-xl font-bold mt-1">Gym Details</h3>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs opacity-75">
                     Displayed across the public homepage header, about section, and footer
                   </p>
                 </div>
@@ -1203,14 +1053,14 @@ export default function Admin() {
                       onChange={(e) =>
                         setSettings({ ...settings, description: e.target.value })
                       }
-                      className="text-sm"
+                      className="admin-input text-sm"
                       placeholder="Tell visitors about the gym ethos, training ground, and mission..."
                     />
                   </div>
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <button className="rounded-lg bg-lime px-6 py-3 font-bold text-ink hover:bg-white transition">
+                  <button className="rounded-lg bg-lime px-6 py-3 font-bold text-ink hover:opacity-90 transition">
                     Save Gym Details
                   </button>
                 </div>
@@ -1218,7 +1068,7 @@ export default function Admin() {
             </section>
 
             {/* Sub-section: Gym Equipments */}
-            <section id="gym-equipments" className="scroll-mt-6 card p-6">
+            <section id="gym-equipments" className="scroll-mt-6 admin-card p-6">
               <EquipmentSection
                 equipment={equipment}
                 onUpdated={async () => {
@@ -1229,7 +1079,7 @@ export default function Admin() {
             </section>
 
             {/* Sub-section: Services */}
-            <section id="services" className="scroll-mt-6 card p-6">
+            <section id="services" className="scroll-mt-6 admin-card p-6">
               <ServicesSection
                 services={services}
                 onUpdated={async () => {
@@ -1240,7 +1090,7 @@ export default function Admin() {
             </section>
 
             {/* Sub-section: Facilities & Gallery */}
-            <section id="facilities-gallery" className="scroll-mt-6 card p-6">
+            <section id="facilities-gallery" className="scroll-mt-6 admin-card p-6">
               <FacilitiesAndGallerySection
                 facilities={facilities}
                 gallery={gallery}
@@ -1257,59 +1107,113 @@ export default function Admin() {
   );
 }
 
-// ======================== HELPER COMPONENTS ========================
+// ======================== UNIFIED SIDEBAR CONTENT COMPONENT ========================
 
-function NavButton({
-  active,
-  onClick,
-  icon,
-  label,
-  badge,
-  badgeUrgent = false,
+function UnifiedSideNavContent({
+  navItems,
+  activeSection,
+  onSelectSection,
+  onCloseMobile,
+  onSignOut,
 }: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-  badge?: number;
-  badgeUrgent?: boolean;
+  navItems: NavItem[];
+  activeSection: string;
+  onSelectSection: (id: string) => void;
+  onCloseMobile?: () => void;
+  onSignOut: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-xs font-medium transition text-left ${
-        active
-          ? 'bg-lime/15 text-lime font-bold border border-lime/30 shadow-[0_4px_20px_rgba(255,112,67,0.15)]'
-          : 'text-zinc-400 hover:text-white hover:bg-white/5'
-      }`}
-    >
-      <div className="flex items-center gap-2.5 min-w-0">
-        <span
-          className={`shrink-0 transition ${
-            active ? 'text-lime' : 'text-zinc-400 group-hover:text-zinc-200'
-          }`}
-        >
-          {icon}
-        </span>
-        <span className="truncate">{label}</span>
+    <div className="flex flex-col h-full justify-between">
+      <div>
+        {/* Brand Header */}
+        <div className="p-5 border-b admin-table-border flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="brand-mark text-sm w-7 h-7">✦</span>
+            <div>
+              <b className="tracking-tight text-sm block">IRON PEAK</b>
+              <span className="eyebrow text-[9px] text-lime">Owner Console</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            {onCloseMobile && (
+              <button
+                onClick={onCloseMobile}
+                className="opacity-70 hover:opacity-100 text-sm p-1"
+                aria-label="Close menu"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Unified Navigation List */}
+        <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-170px)]">
+          {navItems.map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onSelectSection(item.id)}
+                className={`group flex items-center justify-between w-full px-3 py-2.5 rounded-xl text-xs font-medium transition text-left cursor-pointer ${
+                  isActive
+                    ? 'admin-nav-active'
+                    : 'admin-nav-item'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span
+                    className={`shrink-0 transition ${
+                      isActive ? 'text-lime' : 'opacity-70 group-hover:opacity-100'
+                    }`}
+                  >
+                    {item.icon}
+                  </span>
+                  <span className="truncate">{item.label}</span>
+                </div>
+                {typeof item.badge === 'number' && item.badge > 0 && (
+                  <span
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-mono font-bold ${
+                      item.badgeUrgent
+                        ? 'bg-lime text-ink'
+                        : isActive
+                        ? 'bg-lime/20 text-lime'
+                        : 'admin-tag'
+                    }`}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
       </div>
-      {typeof badge === 'number' && badge > 0 && (
-        <span
-          className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-mono font-bold ${
-            badgeUrgent
-              ? 'bg-lime text-ink'
-              : active
-              ? 'bg-lime/20 text-lime'
-              : 'bg-white/10 text-zinc-300'
-          }`}
+
+      {/* Footer in Sidebar */}
+      <div className="p-4 border-t admin-table-border space-y-2 opacity-90">
+        <a
+          href="/"
+          className="admin-nav-item flex items-center justify-between w-full px-3 py-2 text-xs rounded-lg transition"
         >
-          {badge}
-        </span>
-      )}
-    </button>
+          <span>View public site</span>
+          <span>↗</span>
+        </a>
+        <button
+          onClick={onSignOut}
+          className="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-500 hover:text-red-600 rounded-lg transition cursor-pointer"
+        >
+          <IconLogout />
+          <span>Log out</span>
+        </button>
+      </div>
+    </div>
   );
 }
+
+// ======================== STAT COMPONENT ========================
 
 function Stat({
   label,
@@ -1327,13 +1231,13 @@ function Stat({
   return (
     <article
       onClick={onClick}
-      className={`card p-5 transition ${
+      className={`admin-card p-5 transition ${
         onClick ? 'cursor-pointer hover:border-lime/40 hover:-translate-y-0.5' : ''
-      } ${highlight ? 'border-lime/60 bg-gradient-to-br from-lime/10 to-transparent' : ''}`}
+      } ${highlight ? '!border-lime/60 bg-gradient-to-br from-lime/10 to-transparent' : ''}`}
     >
       <p className="eyebrow">{label}</p>
-      <p className="display mt-3 text-4xl text-white tracking-wide">{value}</p>
-      <p className="mt-1 text-xs text-zinc-400">{detail}</p>
+      <p className="display mt-3 text-4xl tracking-wide">{value}</p>
+      <p className="mt-1 text-xs opacity-75">{detail}</p>
     </article>
   );
 }
@@ -1363,6 +1267,7 @@ function Field({
         required={required}
         placeholder={placeholder}
         min={type === 'number' ? '0' : undefined}
+        className="admin-input"
       />
     </div>
   );
@@ -1415,12 +1320,12 @@ function MemberForm({
   return (
     <form onSubmit={add} className="space-y-4">
       <div className="flex items-center justify-between pb-2">
-        <h3 className="font-bold text-white text-base">Register New Member</h3>
+        <h3 className="font-bold text-base">Register New Member</h3>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="text-xs text-zinc-400 hover:text-white"
+            className="text-xs opacity-70 hover:opacity-100 cursor-pointer"
           >
             Cancel
           </button>
@@ -1458,6 +1363,7 @@ function MemberForm({
             onChange={(e) => setDraft({ ...draft, plan_name: e.target.value })}
             required
             placeholder="e.g. Standard, Gold, Peak"
+            className="admin-input"
           />
           <datalist id="plans-datalist">
             <option value="START" />
@@ -1496,25 +1402,26 @@ function MemberForm({
               setDraft({ ...draft, notes: event.target.value })
             }
             placeholder="Optional notes"
+            className="admin-input"
           />
         </div>
       </div>
 
-      {errorMsg && <p className="text-sm text-red-300">{errorMsg}</p>}
+      {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
 
       <div className="flex justify-end gap-3 pt-2">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-white/10 px-4 py-2.5 text-xs text-zinc-300 hover:bg-white/5"
+            className="admin-tag rounded-lg px-4 py-2.5 text-xs opacity-80 hover:opacity-100 cursor-pointer"
           >
             Cancel
           </button>
         )}
         <button
           disabled={submitting}
-          className="rounded-lg bg-lime px-6 py-2.5 text-xs font-bold text-ink hover:bg-white transition disabled:opacity-50"
+          className="rounded-lg bg-lime px-6 py-2.5 text-xs font-bold text-ink hover:opacity-90 transition disabled:opacity-50"
         >
           {submitting ? 'Saving...' : 'Confirm & Add Member'}
         </button>
@@ -1568,12 +1475,12 @@ function VisitorForm({
   return (
     <form onSubmit={add} className="space-y-4">
       <div className="flex items-center justify-between pb-2">
-        <h3 className="font-bold text-white text-base">Record Walk-in Visitor</h3>
+        <h3 className="font-bold text-base">Record Walk-in Visitor</h3>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="text-xs text-zinc-400 hover:text-white"
+            className="text-xs opacity-70 hover:opacity-100 cursor-pointer"
           >
             Cancel
           </button>
@@ -1610,6 +1517,7 @@ function VisitorForm({
             onChange={(e) => setDraft({ ...draft, purpose: e.target.value })}
             required
             placeholder="e.g. Membership enquiry, Day pass"
+            className="admin-input"
           />
           <datalist id="purpose-datalist">
             <option value="Gym enquiry" />
@@ -1632,25 +1540,26 @@ function VisitorForm({
               setDraft({ ...draft, notes: event.target.value })
             }
             placeholder="Interests, timings, notes..."
+            className="admin-input"
           />
         </div>
       </div>
 
-      {errorMsg && <p className="text-sm text-red-300">{errorMsg}</p>}
+      {errorMsg && <p className="text-sm text-red-500">{errorMsg}</p>}
 
       <div className="flex justify-end gap-3 pt-2">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg border border-white/10 px-4 py-2.5 text-xs text-zinc-300 hover:bg-white/5"
+            className="admin-tag rounded-lg px-4 py-2.5 text-xs opacity-80 hover:opacity-100 cursor-pointer"
           >
             Cancel
           </button>
         )}
         <button
           disabled={submitting}
-          className="rounded-lg bg-white px-6 py-2.5 text-xs font-bold text-ink hover:bg-lime transition disabled:opacity-50"
+          className="rounded-lg bg-lime px-6 py-2.5 text-xs font-bold text-ink hover:opacity-90 transition disabled:opacity-50"
         >
           {submitting ? 'Saving...' : 'Add Visitor Record'}
         </button>
@@ -1697,16 +1606,16 @@ function TrainersSection({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b admin-table-border p-6">
         <div>
           <p className="eyebrow">Floor Staff</p>
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-bold">Trainers</h2>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold">
+            <span className="admin-tag rounded-full px-2.5 py-0.5 text-xs font-semibold">
               {trainers.length} coaches
             </span>
           </div>
-          <p className="mt-1 text-xs text-zinc-400">
+          <p className="mt-1 text-xs opacity-75">
             Coaches, strength trainers, and personal instructors shown on site
           </p>
         </div>
@@ -1715,7 +1624,9 @@ function TrainersSection({
           type="button"
           onClick={() => setShowAdd(!showAdd)}
           className={`rounded-lg px-4 py-2 text-xs font-bold transition ${
-            showAdd ? 'bg-white/20 text-white' : 'bg-lime text-ink hover:bg-white'
+            showAdd
+              ? 'admin-tag opacity-90'
+              : 'bg-lime text-ink hover:opacity-90'
           }`}
         >
           {showAdd ? '✕ Close Form' : '+ Add Trainer'}
@@ -1723,8 +1634,8 @@ function TrainersSection({
       </div>
 
       {showAdd && (
-        <form onSubmit={addTrainer} className="p-6 border-b border-white/10 bg-black/25 space-y-4">
-          <h3 className="font-bold text-white text-base">Add New Trainer</h3>
+        <form onSubmit={addTrainer} className="p-6 border-b admin-card-inner space-y-4">
+          <h3 className="font-bold text-base">Add New Trainer</h3>
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
             <Field
               label="Trainer Name *"
@@ -1752,6 +1663,7 @@ function TrainersSection({
                 value={draft.bio}
                 onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
                 placeholder="10+ yrs Olympic lifting..."
+                className="admin-input"
               />
             </div>
           </div>
@@ -1759,11 +1671,11 @@ function TrainersSection({
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="rounded-lg border border-white/10 px-4 py-2 text-xs text-zinc-400"
+              className="admin-tag rounded-lg px-4 py-2 text-xs opacity-70 hover:opacity-100 cursor-pointer"
             >
               Cancel
             </button>
-            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:bg-white">
+            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:opacity-90">
               Save Trainer
             </button>
           </div>
@@ -1771,7 +1683,7 @@ function TrainersSection({
       )}
 
       {trainers.length === 0 ? (
-        <div className="p-8 text-center text-sm text-zinc-400">
+        <div className="p-8 text-center text-sm opacity-70">
           No trainers listed yet. Click "+ Add Trainer" to add your gym coaches.
         </div>
       ) : (
@@ -1779,25 +1691,25 @@ function TrainersSection({
           {trainers.map((trainer) => (
             <div
               key={trainer.id}
-              className="rounded-xl border border-white/10 bg-black/30 p-4 flex gap-4 items-start justify-between"
+              className="admin-subcard rounded-xl p-4 flex gap-4 items-start justify-between"
             >
               <div className="flex gap-3">
                 {trainer.image_url ? (
                   <img
                     src={trainer.image_url}
                     alt={trainer.name}
-                    className="h-12 w-12 rounded-lg object-cover bg-zinc-800"
+                    className="h-12 w-12 rounded-lg object-cover bg-slate-200 dark:bg-zinc-800"
                   />
                 ) : (
-                  <div className="h-12 w-12 rounded-lg bg-white/10 flex items-center justify-center font-bold text-lime">
+                  <div className="h-12 w-12 rounded-lg bg-lime/10 flex items-center justify-center font-bold text-lime">
                     ✦
                   </div>
                 )}
                 <div>
-                  <h4 className="font-bold text-white text-sm">{trainer.name}</h4>
-                  <p className="text-xs text-lime font-mono">{trainer.role}</p>
+                  <h4 className="font-bold text-sm">{trainer.name}</h4>
+                  <p className="text-xs text-lime font-mono font-medium">{trainer.role}</p>
                   {trainer.bio && (
-                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+                    <p className="text-xs opacity-75 mt-1 line-clamp-2">
                       {trainer.bio}
                     </p>
                   )}
@@ -1806,7 +1718,7 @@ function TrainersSection({
               <button
                 type="button"
                 onClick={() => removeTrainer(trainer.id)}
-                className="text-xs text-red-300 hover:text-red-200"
+                className="text-xs text-red-500 hover:underline cursor-pointer"
               >
                 ✕
               </button>
@@ -1856,16 +1768,16 @@ function MembershipPlansSection({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b admin-table-border p-6">
         <div>
           <p className="eyebrow">Pricing Tiers</p>
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-bold">Membership Plans</h2>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold">
+            <span className="admin-tag rounded-full px-2.5 py-0.5 text-xs font-semibold">
               {plans.length} tiers
             </span>
           </div>
-          <p className="mt-1 text-xs text-zinc-400">
+          <p className="mt-1 text-xs opacity-75">
             Membership packages and rates displayed to prospective members on the site
           </p>
         </div>
@@ -1874,7 +1786,9 @@ function MembershipPlansSection({
           type="button"
           onClick={() => setShowAdd(!showAdd)}
           className={`rounded-lg px-4 py-2 text-xs font-bold transition ${
-            showAdd ? 'bg-white/20 text-white' : 'bg-lime text-ink hover:bg-white'
+            showAdd
+              ? 'admin-tag opacity-90'
+              : 'bg-lime text-ink hover:opacity-90'
           }`}
         >
           {showAdd ? '✕ Close Form' : '+ Add Plan'}
@@ -1882,8 +1796,8 @@ function MembershipPlansSection({
       </div>
 
       {showAdd && (
-        <form onSubmit={addPlan} className="p-6 border-b border-white/10 bg-black/25 space-y-4">
-          <h3 className="font-bold text-white text-base">Create Membership Tier</h3>
+        <form onSubmit={addPlan} className="p-6 border-b admin-card-inner space-y-4">
+          <h3 className="font-bold text-base">Create Membership Tier</h3>
           <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
             <Field
               label="Plan Name *"
@@ -1912,6 +1826,7 @@ function MembershipPlansSection({
                 value={draft.description}
                 onChange={(e) => setDraft({ ...draft, description: e.target.value })}
                 placeholder="e.g. Full gym access + sauna"
+                className="admin-input"
               />
             </div>
           </div>
@@ -1919,11 +1834,11 @@ function MembershipPlansSection({
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="rounded-lg border border-white/10 px-4 py-2 text-xs text-zinc-400"
+              className="admin-tag rounded-lg px-4 py-2 text-xs opacity-70 hover:opacity-100 cursor-pointer"
             >
               Cancel
             </button>
-            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:bg-white">
+            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:opacity-90">
               Save Plan
             </button>
           </div>
@@ -1931,7 +1846,7 @@ function MembershipPlansSection({
       )}
 
       {plans.length === 0 ? (
-        <div className="p-8 text-center text-sm text-zinc-400">
+        <div className="p-8 text-center text-sm opacity-70">
           No membership plans listed yet. Click "+ Add Plan" above.
         </div>
       ) : (
@@ -1939,25 +1854,25 @@ function MembershipPlansSection({
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className="rounded-xl border border-white/10 bg-black/30 p-5 flex flex-col justify-between"
+              className="admin-subcard rounded-xl p-5 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-lg text-white">{plan.name}</h4>
+                  <h4 className="font-bold text-lg">{plan.name}</h4>
                   <button
                     type="button"
                     onClick={() => removePlan(plan.id)}
-                    className="text-xs text-red-300 hover:text-red-200"
+                    className="text-xs text-red-500 hover:underline cursor-pointer"
                   >
                     Remove
                   </button>
                 </div>
                 <div className="mt-3 flex items-baseline gap-1.5">
                   <span className="display text-3xl text-lime">{plan.price}</span>
-                  <span className="text-xs text-zinc-400">/{plan.period || 'mo'}</span>
+                  <span className="text-xs opacity-70">/{plan.period || 'mo'}</span>
                 </div>
                 {plan.description && (
-                  <p className="mt-3 text-xs text-zinc-300 leading-relaxed">
+                  <p className="mt-3 text-xs opacity-80 leading-relaxed">
                     {plan.description}
                   </p>
                 )}
@@ -2007,16 +1922,16 @@ function OpeningHoursSection({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b admin-table-border p-6">
         <div>
           <p className="eyebrow">Operating Schedule</p>
           <div className="flex items-center gap-3">
             <h2 className="text-2xl font-bold">Opening Hours</h2>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold">
+            <span className="admin-tag rounded-full px-2.5 py-0.5 text-xs font-semibold">
               {hours.length} entries
             </span>
           </div>
-          <p className="mt-1 text-xs text-zinc-400">
+          <p className="mt-1 text-xs opacity-75">
             Daily gym access hours published on the website
           </p>
         </div>
@@ -2025,7 +1940,9 @@ function OpeningHoursSection({
           type="button"
           onClick={() => setShowAdd(!showAdd)}
           className={`rounded-lg px-4 py-2 text-xs font-bold transition ${
-            showAdd ? 'bg-white/20 text-white' : 'bg-lime text-ink hover:bg-white'
+            showAdd
+              ? 'admin-tag opacity-90'
+              : 'bg-lime text-ink hover:opacity-90'
           }`}
         >
           {showAdd ? '✕ Close Form' : '+ Add Hours'}
@@ -2033,8 +1950,8 @@ function OpeningHoursSection({
       </div>
 
       {showAdd && (
-        <form onSubmit={addHours} className="p-6 border-b border-white/10 bg-black/25 space-y-4">
-          <h3 className="font-bold text-white text-base">Add Schedule Entry</h3>
+        <form onSubmit={addHours} className="p-6 border-b admin-card-inner space-y-4">
+          <h3 className="font-bold text-base">Add Schedule Entry</h3>
           <div className="grid gap-3 sm:grid-cols-3">
             <Field
               label="Day(s) *"
@@ -2062,11 +1979,11 @@ function OpeningHoursSection({
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="rounded-lg border border-white/10 px-4 py-2 text-xs text-zinc-400"
+              className="admin-tag rounded-lg px-4 py-2 text-xs opacity-70 hover:opacity-100 cursor-pointer"
             >
               Cancel
             </button>
-            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:bg-white">
+            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:opacity-90">
               Save Hours
             </button>
           </div>
@@ -2074,7 +1991,7 @@ function OpeningHoursSection({
       )}
 
       {hours.length === 0 ? (
-        <div className="p-8 text-center text-sm text-zinc-400">
+        <div className="p-8 text-center text-sm opacity-70">
           No opening hours configured. Click "+ Add Hours" above.
         </div>
       ) : (
@@ -2083,18 +2000,18 @@ function OpeningHoursSection({
             {hours.map((h) => (
               <div
                 key={h.id}
-                className="rounded-xl border border-white/10 bg-black/30 px-4 py-3 flex items-center justify-between"
+                className="admin-subcard rounded-xl px-4 py-3 flex items-center justify-between"
               >
                 <div>
-                  <span className="font-semibold text-white text-sm block">{h.day}</span>
-                  <span className="text-xs text-lime font-mono">
+                  <span className="font-semibold text-sm block">{h.day}</span>
+                  <span className="text-xs text-lime font-mono font-medium">
                     {h.opens} — {h.closes}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => removeHours(h.id)}
-                  className="text-xs text-red-300 hover:text-red-200"
+                  className="text-xs text-red-500 hover:underline cursor-pointer"
                 >
                   ✕
                 </button>
@@ -2137,15 +2054,15 @@ function EquipmentSection({
 
   return (
     <div>
-      <div className="flex items-center justify-between pb-4 border-b border-white/10">
+      <div className="flex items-center justify-between pb-4 border-b admin-table-border">
         <div>
           <p className="eyebrow">Inventory Highlights</p>
           <h3 className="text-xl font-bold mt-1">Gym Equipments</h3>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs opacity-75">
             Featured machines, free weights, and gear displayed to prospective trainees
           </p>
         </div>
-        <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold">
+        <span className="admin-tag rounded-full px-2.5 py-0.5 text-xs font-semibold">
           {equipment.length} items
         </span>
       </div>
@@ -2155,10 +2072,10 @@ function EquipmentSection({
           value={draftTitle}
           onChange={(e) => setDraftTitle(e.target.value)}
           placeholder="e.g. Olympic Barbells, Cable Crossover..."
-          className="text-sm"
+          className="admin-input text-sm"
           required
         />
-        <button className="shrink-0 rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:bg-white transition">
+        <button className="shrink-0 rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:opacity-90 transition">
           + Add Equipment
         </button>
       </form>
@@ -2167,13 +2084,13 @@ function EquipmentSection({
         {equipment.map((item) => (
           <span
             key={item.id}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-1.5 text-xs font-medium text-white"
+            className="admin-tag inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium"
           >
             <span>{item.title}</span>
             <button
               type="button"
               onClick={() => removeEquipment(item.id)}
-              className="text-zinc-400 hover:text-red-300 text-xs"
+              className="opacity-60 hover:opacity-100 hover:text-red-500 text-xs cursor-pointer"
             >
               ✕
             </button>
@@ -2217,11 +2134,11 @@ function ServicesSection({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b admin-table-border">
         <div>
           <p className="eyebrow">Training Modalities</p>
           <h3 className="text-xl font-bold mt-1">Services</h3>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs opacity-75">
             Training programs, coaching offerings, and class formats
           </p>
         </div>
@@ -2230,7 +2147,9 @@ function ServicesSection({
           type="button"
           onClick={() => setShowAdd(!showAdd)}
           className={`rounded-lg px-4 py-2 text-xs font-bold transition ${
-            showAdd ? 'bg-white/20 text-white' : 'bg-lime text-ink hover:bg-white'
+            showAdd
+              ? 'admin-tag opacity-90'
+              : 'bg-lime text-ink hover:opacity-90'
           }`}
         >
           {showAdd ? '✕ Close Form' : '+ Add Service'}
@@ -2238,7 +2157,7 @@ function ServicesSection({
       </div>
 
       {showAdd && (
-        <form onSubmit={addService} className="mt-4 p-5 rounded-xl border border-white/10 bg-black/25 space-y-3">
+        <form onSubmit={addService} className="mt-4 p-5 rounded-xl border admin-card-inner space-y-3">
           <Field
             label="Service Title *"
             value={draft.title}
@@ -2252,17 +2171,18 @@ function ServicesSection({
               value={draft.description}
               onChange={(e) => setDraft({ ...draft, description: e.target.value })}
               placeholder="e.g. Build foundational power, agility, and mobility..."
+              className="admin-input"
             />
           </div>
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={() => setShowAdd(false)}
-              className="rounded-lg border border-white/10 px-4 py-2 text-xs text-zinc-400"
+              className="admin-tag rounded-lg px-4 py-2 text-xs opacity-70 hover:opacity-100 cursor-pointer"
             >
               Cancel
             </button>
-            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:bg-white">
+            <button className="rounded-lg bg-lime px-5 py-2 text-xs font-bold text-ink hover:opacity-90">
               Save Service
             </button>
           </div>
@@ -2273,18 +2193,18 @@ function ServicesSection({
         {services.map((item) => (
           <div
             key={item.id}
-            className="rounded-xl border border-white/10 bg-black/30 p-4 flex items-start justify-between"
+            className="admin-subcard rounded-xl p-4 flex items-start justify-between"
           >
             <div>
-              <h4 className="font-bold text-white text-sm">{item.title}</h4>
+              <h4 className="font-bold text-sm">{item.title}</h4>
               {item.description && (
-                <p className="text-xs text-zinc-400 mt-1">{item.description}</p>
+                <p className="text-xs opacity-75 mt-1">{item.description}</p>
               )}
             </div>
             <button
               type="button"
               onClick={() => removeService(item.id)}
-              className="text-xs text-red-300 hover:text-red-200 ml-3"
+              className="text-xs text-red-500 hover:underline ml-3 cursor-pointer"
             >
               ✕
             </button>
@@ -2345,10 +2265,10 @@ function FacilitiesAndGallerySection({
     <div className="space-y-8">
       {/* Facilities */}
       <div>
-        <div className="pb-3 border-b border-white/10">
+        <div className="pb-3 border-b admin-table-border">
           <p className="eyebrow">Amenities</p>
           <h3 className="text-lg font-bold mt-0.5">Gym Facilities</h3>
-          <p className="text-xs text-zinc-400">Lockers, recovery zones, member lounges</p>
+          <p className="text-xs opacity-75">Lockers, recovery zones, member lounges</p>
         </div>
 
         <form onSubmit={addFacility} className="mt-4 flex gap-3">
@@ -2356,10 +2276,10 @@ function FacilitiesAndGallerySection({
             value={draftFacility}
             onChange={(e) => setDraftFacility(e.target.value)}
             placeholder="e.g. Steam Shower, Members Lounge..."
-            className="text-sm"
+            className="admin-input text-sm"
             required
           />
-          <button className="shrink-0 rounded-lg bg-lime px-4 py-2 text-xs font-bold text-ink hover:bg-white transition">
+          <button className="shrink-0 rounded-lg bg-lime px-4 py-2 text-xs font-bold text-ink hover:opacity-90 transition">
             + Add Facility
           </button>
         </form>
@@ -2368,13 +2288,13 @@ function FacilitiesAndGallerySection({
           {facilities.map((fac) => (
             <span
               key={fac.id}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-1 text-xs text-white"
+              className="admin-tag inline-flex items-center gap-2 rounded-lg px-3 py-1 text-xs"
             >
               <span>{fac.title}</span>
               <button
                 type="button"
                 onClick={() => removeFacility(fac.id)}
-                className="text-zinc-400 hover:text-red-300 text-xs"
+                className="opacity-60 hover:opacity-100 hover:text-red-500 text-xs cursor-pointer"
               >
                 ✕
               </button>
@@ -2384,11 +2304,11 @@ function FacilitiesAndGallerySection({
       </div>
 
       {/* Gallery Images */}
-      <div className="pt-4 border-t border-white/10">
-        <div className="pb-3 border-b border-white/10">
+      <div className="pt-4 border-t admin-table-border">
+        <div className="pb-3 border-b admin-table-border">
           <p className="eyebrow">Visuals</p>
           <h3 className="text-lg font-bold mt-0.5">Gallery Images</h3>
-          <p className="text-xs text-zinc-400">Photos of workout floor, athletes, and training sessions</p>
+          <p className="text-xs opacity-75">Photos of workout floor, athletes, and training sessions</p>
         </div>
 
         <form onSubmit={addGalleryImage} className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -2396,7 +2316,7 @@ function FacilitiesAndGallerySection({
             value={draftImage.image_url}
             onChange={(e) => setDraftImage({ ...draftImage, image_url: e.target.value })}
             placeholder="Image URL (https://...)"
-            className="text-sm"
+            className="admin-input text-sm"
             required
           />
           <div className="flex gap-2">
@@ -2404,9 +2324,9 @@ function FacilitiesAndGallerySection({
               value={draftImage.caption}
               onChange={(e) => setDraftImage({ ...draftImage, caption: e.target.value })}
               placeholder="Caption (optional)"
-              className="text-sm"
+              className="admin-input text-sm"
             />
-            <button className="shrink-0 rounded-lg bg-lime px-4 py-2 text-xs font-bold text-ink hover:bg-white transition">
+            <button className="shrink-0 rounded-lg bg-lime px-4 py-2 text-xs font-bold text-ink hover:opacity-90 transition">
               + Add
             </button>
           </div>
@@ -2416,7 +2336,7 @@ function FacilitiesAndGallerySection({
           {gallery.map((img) => (
             <div
               key={img.id}
-              className="group relative rounded-xl overflow-hidden border border-white/10 aspect-video bg-zinc-900"
+              className="group relative rounded-xl overflow-hidden border admin-table-border aspect-video bg-zinc-900"
             >
               <img
                 src={img.image_url}
@@ -2426,7 +2346,7 @@ function FacilitiesAndGallerySection({
               <button
                 type="button"
                 onClick={() => removeGalleryImage(img.id)}
-                className="absolute top-2 right-2 rounded bg-black/80 px-2 py-0.5 text-xs text-red-300 opacity-0 group-hover:opacity-100 transition"
+                className="absolute top-2 right-2 rounded bg-black/80 px-2 py-0.5 text-xs text-red-300 opacity-0 group-hover:opacity-100 transition cursor-pointer"
               >
                 Delete
               </button>

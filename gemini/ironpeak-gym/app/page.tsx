@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 type Gym = {
   name: string;
@@ -92,20 +93,24 @@ export default function Home() {
     <main>
       <nav className="site-nav">
         <div className="shell flex items-center justify-between py-4">
-        <a className="flex items-center font-black tracking-tighter text-xl" href="#top">
-          <span className="brand-mark">✦</span>{gym.name}
-        </a>
-        <div className="hidden md:flex gap-7 text-sm text-zinc-300">
-          <a className="nav-link" href="#about">About</a>
-          <a className="nav-link" href="#services">Training</a>
-          <a className="nav-link" href="#equipment">Equipment</a>
-          <a className="nav-link" href="#plans">Memberships</a>
-          <a className="nav-link" href="#visit">Visit</a>
+          <a className="flex items-center font-black tracking-tighter text-xl text-slate-900 dark:text-white" href="#top">
+            <span className="brand-mark">✦</span>{gym.name}
+          </a>
+          <div className="hidden md:flex gap-7 text-sm text-slate-700 dark:text-zinc-300">
+            <a className="nav-link" href="#about">About</a>
+            <a className="nav-link" href="#services">Training</a>
+            <a className="nav-link" href="#equipment">Equipment</a>
+            <a className="nav-link" href="#plans">Memberships</a>
+            <a className="nav-link" href="#visit">Visit</a>
+          </div>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <a href="/admin" className="pill hover:bg-lime hover:text-ink">
+              Owner login
+            </a>
+          </div>
         </div>
-        <a href="/admin" className="pill hover:bg-lime hover:text-ink">
-          Owner login
-        </a>
-        </div>
+
       </nav>
       <section
         id="top"
@@ -121,7 +126,7 @@ export default function Home() {
               <br />
               STARTS HERE.
             </h1>
-            <p className="mt-8 max-w-md text-lg leading-relaxed text-zinc-300">
+            <p className="mt-8 max-w-md text-lg leading-relaxed text-slate-600 dark:text-zinc-300">
               {gym.description}
             </p>
             <a
@@ -131,8 +136,8 @@ export default function Home() {
               Explore memberships →
             </a>
             <div className="mt-12 flex gap-8 text-sm">
-              <div className="stat-line"><b className="hero-number block text-2xl text-lime">01</b><span className="text-zinc-400">One goal: progress</span></div>
-              <div className="stat-line"><b className="hero-number block text-2xl text-lime">100%</b><span className="text-zinc-400">Effort, every session</span></div>
+              <div className="stat-line"><b className="hero-number block text-2xl text-lime">01</b><span className="text-slate-500 dark:text-zinc-400">One goal: progress</span></div>
+              <div className="stat-line"><b className="hero-number block text-2xl text-lime">100%</b><span className="text-slate-500 dark:text-zinc-400">Effort, every session</span></div>
             </div>
           </div>
           <div className="hero-art card relative min-h-[410px] overflow-hidden p-6 md:min-h-[500px]">
@@ -149,7 +154,7 @@ export default function Home() {
               </div>
             )}
             <div className="relative mt-auto flex h-full items-end">
-              <div className="w-full border-t border-white/20 pt-4"><p className="eyebrow">No shortcuts. Just the work.</p><p className="mt-2 text-sm font-bold">Built for your next rep. ↗</p></div>
+              <div className="w-full border-t border-slate-300 dark:border-white/20 pt-4"><p className="eyebrow">No shortcuts. Just the work.</p><p className="mt-2 text-sm font-bold">Built for your next rep. ↗</p></div>
             </div>
           </div>
         </div>
@@ -161,7 +166,7 @@ export default function Home() {
           <br />
           TO TRAIN.
         </h2>
-        <p className="max-w-lg self-end text-lg leading-relaxed text-zinc-300">
+        <p className="max-w-lg self-end text-lg leading-relaxed text-slate-600 dark:text-zinc-300">
           Expert-led, welcoming, and built around progress that lasts. Whether
           it’s your first session or your thousandth, you belong on the floor.
         </p>
@@ -187,7 +192,7 @@ export default function Home() {
       <section id="equipment" className="shell py-24">
         <p className="eyebrow section-kicker">Built to perform</p>
         <h2 className="display mt-3 text-5xl sm:text-7xl">EQUIPMENT &amp; FACILITIES.</h2>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-zinc-300">
+        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-zinc-300">
           Everything you need to train hard, recover well, and make every session count.
         </p>
         <div className="mt-12 grid gap-5 lg:grid-cols-2">

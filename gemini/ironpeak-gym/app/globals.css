@@ -4,32 +4,474 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; overflow-x: hidden; background: #101321; color: #fffaf4; font-family: Manrope, Arial, sans-serif; }
-body::before { content: ''; position: fixed; inset: 0; z-index: -2; background: radial-gradient(circle at 88% 3%, rgba(255,112,67,.24), transparent 22%), radial-gradient(circle at 8% 42%, rgba(83,65,135,.32), transparent 27%), #101321; }
-body::after { content: ''; position: fixed; inset: 0; z-index: -1; opacity: .25; pointer-events: none; background-image: linear-gradient(115deg, transparent 49.5%, rgba(255,255,255,.045) 50%, transparent 50.5%); background-size: 72px 72px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
-.shell { max-width: 1200px; margin: auto; padding: 0 24px; }
-.eyebrow { color:#ff9b78; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: .15em; text-transform: uppercase; }
-.display { font-family: 'Bebas Neue', Impact, Arial Narrow, sans-serif; font-weight: 400; letter-spacing: .015em; line-height: .86; }
-.pill { border:1px solid rgba(255,220,202,.35); border-radius:99px; padding:11px 17px; font-size:12px; font-weight: 700; transition: .2s ease; }
-.card { background: linear-gradient(135deg, rgba(36,40,62,.92), rgba(21,24,40,.96)); border:1px solid rgba(255,225,210,.12); border-radius:18px; box-shadow: 0 22px 60px rgba(5,6,15,.3); }
-.grid-line { background-image: linear-gradient(rgba(255,112,67,.075) 1px, transparent 1px),linear-gradient(90deg,rgba(255,112,67,.075) 1px, transparent 1px); background-size:48px 48px; }
-input, textarea, select { width:100%; border:1px solid #4b516c; background:#171b2b; color:white; border-radius:8px; padding:11px; }
-label { display:block; font-size:12px; color:#c8cad7; margin-bottom:6px; }
-button { cursor:pointer; transition: transform .2s ease, box-shadow .2s ease; }
-button:hover { transform: translateY(-2px); }
-.site-nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(16px); background: rgba(16,19,33,.78); border-bottom: 1px solid rgba(255,225,210,.08); }
-.brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; margin-right: 9px; border-radius: 8px; background: #ff7043; color: #101321; font-size: 13px; transform: rotate(-12deg); }
-.nav-link { transition: color .18s ease; } .nav-link:hover { color: #ff9b78; }
-.hero-art { isolation: isolate; background: radial-gradient(circle at 64% 35%, rgba(255,112,67,.62), transparent 6%), radial-gradient(circle at 20% 90%, rgba(88,68,142,.7), transparent 32%), linear-gradient(145deg, #393e62, #171a2b 62%); }
-.hero-art::after { content: 'PEAK'; position: absolute; z-index: -1; right: -18px; bottom: -48px; color: rgba(255,237,228,.055); font: 400 185px/.8 'Bebas Neue', sans-serif; letter-spacing: .01em; }
-.hero-number { text-shadow: 0 0 30px rgba(255,112,67,.34); }
-.stat-line { border-left: 1px solid rgba(255,155,120,.5); padding-left: 14px; }
-.section-kicker { display: inline-flex; align-items: center; gap: 8px; } .section-kicker::before { content: ''; width: 22px; height: 1px; background: currentColor; }
-.service-tile { transition: transform .2s ease, background .2s ease, border-color .2s ease; } .service-tile:hover { transform: translateX(7px); background: #ff7043; border-color: #ff7043; }
-.service-tile:hover span { color: #101321 !important; }
-.plan-card { position: relative; overflow: hidden; } .plan-card::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(130deg, rgba(255,255,255,.07), transparent 30%); }
-.equipment-card { position: relative; overflow: hidden; } .equipment-card::before { content: '01'; position: absolute; right: 22px; top: 18px; color: rgba(255,112,67,.15); font: 400 105px/.8 'Bebas Neue', sans-serif; }
-@media (max-width: 640px) { .shell { padding: 0 18px; } .hero-art::after { font-size: 118px; } }
+/* ========================================================
+   THEME DESIGN TOKENS (LIGHT DEFAULT / DARK WHEN .dark)
+   ======================================================== */
+:root {
+  color-scheme: light;
+
+  /* Global Colors */
+  --bg-page: #f8fafc;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-sub: #475569;
+  --brand-orange: #ff7043;
+  --eyebrow-color: #ea580c;
+
+  /* Public Cards */
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+
+  /* Form Elements */
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-text: #0f172a;
+  --label-color: #475569;
+
+  /* Public Site Nav */
+  --site-nav-bg: rgba(255, 255, 255, 0.88);
+  --site-nav-border: #e2e8f0;
+  --site-nav-link: #334155;
+
+  /* Admin Console */
+  --admin-page-bg: #f8fafc;
+  --admin-sidebar-bg: #ffffff;
+  --admin-header-bg: #ffffff;
+  --admin-border: #e2e8f0;
+  --admin-card-bg: #ffffff;
+  --admin-card-inner: #f8fafc;
+  --admin-input-bg: #ffffff;
+  --admin-input-border: #cbd5e1;
+  --admin-input-text: #0f172a;
+  --admin-table-head: #f1f5f9;
+  --admin-table-head-text: #475569;
+  --admin-table-row: #ffffff;
+  --admin-table-row-hover: #f8fafc;
+  --admin-table-border: #e2e8f0;
+  --admin-tag-bg: #f1f5f9;
+  --admin-tag-text: #1e293b;
+  --admin-subcard-bg: #f8fafc;
+  --admin-nav-item: #64748b;
+  --admin-nav-item-hover: #0f172a;
+  --admin-nav-hover-bg: #f1f5f9;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  /* Global Colors */
+  --bg-page: #101321;
+  --text-main: #fffaf4;
+  --text-muted: #a1a1aa;
+  --text-sub: #c8cad7;
+  --brand-orange: #ff7043;
+  --eyebrow-color: #ff9b78;
+
+  /* Public Cards */
+  --card-bg: linear-gradient(135deg, rgba(36, 40, 62, 0.95), rgba(21, 24, 40, 0.98));
+  --card-border: rgba(255, 225, 210, 0.12);
+  --card-shadow: 0 22px 60px rgba(5, 6, 15, 0.35);
+
+  /* Form Elements */
+  --input-bg: #171b2b;
+  --input-border: #4b516c;
+  --input-text: #ffffff;
+  --label-color: #c8cad7;
+
+  /* Public Site Nav */
+  --site-nav-bg: rgba(16, 19, 33, 0.82);
+  --site-nav-border: rgba(255, 225, 210, 0.08);
+  --site-nav-link: #d4d4d8;
+
+  /* Admin Console - Pure Luxury Dark */
+  --admin-page-bg: #101321;
+  --admin-sidebar-bg: #0c0f1d;
+  --admin-header-bg: rgba(14, 18, 34, 0.95);
+  --admin-border: rgba(255, 255, 255, 0.1);
+  --admin-card-bg: linear-gradient(135deg, rgba(36, 40, 62, 0.95), rgba(21, 24, 40, 0.98));
+  --admin-card-inner: rgba(0, 0, 0, 0.25);
+  --admin-input-bg: #131728;
+  --admin-input-border: #383f58;
+  --admin-input-text: #ffffff;
+  --admin-table-head: rgba(255, 255, 255, 0.05);
+  --admin-table-head-text: #a1a1aa;
+  --admin-table-row: transparent;
+  --admin-table-row-hover: rgba(255, 255, 255, 0.03);
+  --admin-table-border: rgba(255, 255, 255, 0.08);
+  --admin-tag-bg: rgba(255, 255, 255, 0.1);
+  --admin-tag-text: #ffffff;
+  --admin-subcard-bg: rgba(0, 0, 0, 0.3);
+  --admin-nav-item: #a1a1aa;
+  --admin-nav-item-hover: #ffffff;
+  --admin-nav-hover-bg: rgba(255, 255, 255, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ================= BODY & BACKGROUNDS ================= */
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: Manrope, Arial, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: radial-gradient(circle at 88% 3%, rgba(255, 112, 67, 0.1), transparent 30%),
+              radial-gradient(circle at 8% 42%, rgba(226, 232, 240, 0.7), transparent 35%),
+              #f8fafc;
+  transition: background 0.25s ease;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.1;
+  pointer-events: none;
+  background-image: linear-gradient(115deg, transparent 49.5%, rgba(0, 0, 0, 0.05) 50%, transparent 50.5%);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+html.dark body::before {
+  background: radial-gradient(circle at 88% 3%, rgba(255, 112, 67, 0.24), transparent 22%),
+              radial-gradient(circle at 8% 42%, rgba(83, 65, 135, 0.32), transparent 27%),
+              #101321;
+}
+
+html.dark body::after {
+  opacity: 0.25;
+  background-image: linear-gradient(115deg, transparent 49.5%, rgba(255, 255, 255, 0.045) 50%, transparent 50.5%);
+}
+
+.shell {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 24px;
+}
+
+.eyebrow {
+  color: var(--eyebrow-color);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+.display {
+  font-family: 'Bebas Neue', Impact, Arial Narrow, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 0.86;
+}
+
+.pill {
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  background: rgba(255, 255, 255, 0.7);
+  color: #0f172a;
+  border-radius: 99px;
+  padding: 10px 17px;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+html.dark .pill {
+  border: 1px solid rgba(255, 220, 202, 0.35);
+  background: transparent;
+  color: #fffaf4;
+}
+
+/* Card Styling */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  color: var(--text-main);
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.grid-line {
+  background-image: linear-gradient(rgba(255, 112, 67, 0.06) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 112, 67, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+html.dark .grid-line {
+  background-image: linear-gradient(rgba(255, 112, 67, 0.075) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255, 112, 67, 0.075) 1px, transparent 1px);
+}
+
+/* Form Elements */
+input, textarea, select {
+  width: 100%;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-text);
+  border-radius: 8px;
+  padding: 11px;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #ff7043;
+  box-shadow: 0 0 0 2px rgba(255, 112, 67, 0.25);
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--label-color);
+  margin-bottom: 6px;
+  transition: color 0.2s ease;
+}
+
+button {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* Public Navigation */
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(16px);
+  background: var(--site-nav-bg);
+  border-bottom: 1px solid var(--site-nav-border);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin-right: 9px;
+  border-radius: 8px;
+  background: #ff7043;
+  color: #101321;
+  font-size: 13px;
+  transform: rotate(-12deg);
+}
+
+.nav-link {
+  color: var(--site-nav-link);
+  transition: color 0.18s ease;
+}
+
+.nav-link:hover {
+  color: #ff7043;
+}
+
+/* Hero Section Art */
+.hero-art {
+  isolation: isolate;
+  background: radial-gradient(circle at 64% 35%, rgba(255, 112, 67, 0.35), transparent 25%),
+              radial-gradient(circle at 20% 90%, rgba(203, 213, 225, 0.7), transparent 35%),
+              linear-gradient(145deg, #e2e8f0, #f1f5f9 62%);
+  transition: background 0.3s ease;
+}
+
+html.dark .hero-art {
+  background: radial-gradient(circle at 64% 35%, rgba(255, 112, 67, 0.62), transparent 6%),
+              radial-gradient(circle at 20% 90%, rgba(88, 68, 142, 0.7), transparent 32%),
+              linear-gradient(145deg, #393e62, #171a2b 62%);
+}
+
+.hero-art::after {
+  content: 'PEAK';
+  position: absolute;
+  z-index: -1;
+  right: -18px;
+  bottom: -48px;
+  color: rgba(15, 23, 42, 0.06);
+  font: 400 185px/0.8 'Bebas Neue', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+html.dark .hero-art::after {
+  color: rgba(255, 237, 228, 0.055);
+}
+
+.hero-number {
+  text-shadow: 0 0 30px rgba(255, 112, 67, 0.34);
+}
+
+.stat-line {
+  border-left: 1px solid rgba(255, 112, 67, 0.5);
+  padding-left: 14px;
+}
+
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-kicker::before {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+}
+
+.service-tile {
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.service-tile:hover {
+  transform: translateX(7px);
+  background: #ff7043;
+  border-color: #ff7043;
+}
+
+.service-tile:hover span {
+  color: #101321 !important;
+}
+
+.plan-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(130deg, rgba(255, 255, 255, 0.12), transparent 30%);
+}
+
+.equipment-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.equipment-card::before {
+  content: '01';
+  position: absolute;
+  right: 22px;
+  top: 18px;
+  color: rgba(255, 112, 67, 0.15);
+  font: 400 105px/0.8 'Bebas Neue', sans-serif;
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 0 18px;
+  }
+  .hero-art::after {
+    font-size: 118px;
+  }
+}
+
+/* ========================================================
+   ADMIN CONSOLE SPECIFIC THEMED CLASSES
+   ======================================================== */
+.admin-shell {
+  background-color: var(--admin-page-bg) !important;
+  color: var(--text-main);
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.admin-sidebar {
+  background-color: var(--admin-sidebar-bg) !important;
+  border-color: var(--admin-border) !important;
+  color: var(--text-main);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-header {
+  background-color: var(--admin-header-bg) !important;
+  border-color: var(--admin-border) !important;
+  color: var(--text-main);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-card {
+  background: var(--admin-card-bg) !important;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  color: var(--text-main);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-card-inner {
+  background-color: var(--admin-card-inner) !important;
+  border-color: var(--admin-border) !important;
+}
+
+.admin-input {
+  background-color: var(--admin-input-bg) !important;
+  border-color: var(--admin-input-border) !important;
+  color: var(--admin-input-text) !important;
+}
+
+.admin-table-head {
+  background-color: var(--admin-table-head) !important;
+  color: var(--admin-table-head-text) !important;
+}
+
+.admin-table-border {
+  border-color: var(--admin-table-border) !important;
+}
+
+.admin-table-row:hover {
+  background-color: var(--admin-table-row-hover) !important;
+}
+
+.admin-subcard {
+  background-color: var(--admin-subcard-bg) !important;
+  border: 1px solid var(--admin-border) !important;
+  color: var(--text-main);
+}
+
+.admin-tag {
+  background-color: var(--admin-tag-bg) !important;
+  border: 1px solid var(--admin-border) !important;
+  color: var(--admin-tag-text) !important;
+}
+
+.admin-nav-item {
+  color: var(--admin-nav-item);
+  transition: all 0.15s ease;
+}
+
+.admin-nav-item:hover {
+  color: var(--admin-nav-item-hover);
+  background-color: var(--admin-nav-hover-bg);
+}
+
+.admin-nav-active {
+  background-color: rgba(255, 112, 67, 0.18) !important;
+  color: #ff7043 !important;
+  border: 1px solid rgba(255, 112, 67, 0.4) !important;
+  font-weight: 700;
+}
