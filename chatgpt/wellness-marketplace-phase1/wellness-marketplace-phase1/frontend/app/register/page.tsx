@@ -1,0 +1,9 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { api,setToken } from "../../lib/api";
+export default function Register(){
+ const [name,setName]=useState(""),[email,setEmail]=useState(""),[password,setPassword]=useState("password123"),[role,setRole]=useState("CUSTOMER"),[error,setError]=useState("");
+ async function submit(e:React.FormEvent){e.preventDefault();try{const r=await api<{token:string}>("/auth/register",{method:"POST",body:JSON.stringify({name,email,password,role})});setToken(r.token);location.href="/dashboard"}catch(e:any){setError(e.message)}}
+ return <main className="min-h-screen flex items-center justify-center p-5"><form onSubmit={submit} className="card p-8 w-full max-w-md"><Link href="/" className="text-2xl font-black">wellora<span className="text-[#b38b4d]">.</span></Link><h1 className="text-3xl font-black mt-10 mb-6">Create account</h1><input required className="border rounded-xl p-3 w-full mb-3" value={name} onChange={e=>setName(e.target.value)} placeholder="Full name"/><input required type="email" className="border rounded-xl p-3 w-full mb-3" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email"/><input required minLength={8} type="password" className="border rounded-xl p-3 w-full mb-3" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password"/><select className="border rounded-xl p-3 w-full mb-4" value={role} onChange={e=>setRole(e.target.value)}><option value="CUSTOMER">Customer</option><option value="PROFESSIONAL">Wellness Professional</option></select><button className="btn btn-primary w-full">Create account</button>{error&&<p className="text-red-700 mt-3">{error}</p>}<Link href="/login" className="block mt-5 text-center font-semibold">Already have an account?</Link></form></main>
+}

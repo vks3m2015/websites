@@ -1,0 +1,6 @@
+{
+  "name": "AyuNirvana NCR - Wellness Marketplace",
+  "description": "Production-ready wellness marketplace for Delhi NCR connecting verified massage therapists, yoga instructors, physiotherapists, and ayurvedic healers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

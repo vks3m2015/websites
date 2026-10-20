@@ -1,0 +1,25 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/wellness}
+    username: ${DB_USER:wellness}
+    password: ${DB_PASSWORD:wellness}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-this-development-secret-to-a-long-random-production-secret}
+    expiration-ms: 86400000

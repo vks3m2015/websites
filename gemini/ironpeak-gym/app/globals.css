@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Bebas+Neue&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; overflow-x: hidden; background: #101321; color: #fffaf4; font-family: Manrope, Arial, sans-serif; }
+body::before { content: ''; position: fixed; inset: 0; z-index: -2; background: radial-gradient(circle at 88% 3%, rgba(255,112,67,.24), transparent 22%), radial-gradient(circle at 8% 42%, rgba(83,65,135,.32), transparent 27%), #101321; }
+body::after { content: ''; position: fixed; inset: 0; z-index: -1; opacity: .25; pointer-events: none; background-image: linear-gradient(115deg, transparent 49.5%, rgba(255,255,255,.045) 50%, transparent 50.5%); background-size: 72px 72px; mask-image: linear-gradient(to bottom, black, transparent 85%); }
+.shell { max-width: 1200px; margin: auto; padding: 0 24px; }
+.eyebrow { color:#ff9b78; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: .15em; text-transform: uppercase; }
+.display { font-family: 'Bebas Neue', Impact, Arial Narrow, sans-serif; font-weight: 400; letter-spacing: .015em; line-height: .86; }
+.pill { border:1px solid rgba(255,220,202,.35); border-radius:99px; padding:11px 17px; font-size:12px; font-weight: 700; transition: .2s ease; }
+.card { background: linear-gradient(135deg, rgba(36,40,62,.92), rgba(21,24,40,.96)); border:1px solid rgba(255,225,210,.12); border-radius:18px; box-shadow: 0 22px 60px rgba(5,6,15,.3); }
+.grid-line { background-image: linear-gradient(rgba(255,112,67,.075) 1px, transparent 1px),linear-gradient(90deg,rgba(255,112,67,.075) 1px, transparent 1px); background-size:48px 48px; }
+input, textarea, select { width:100%; border:1px solid #4b516c; background:#171b2b; color:white; border-radius:8px; padding:11px; }
+label { display:block; font-size:12px; color:#c8cad7; margin-bottom:6px; }
+button { cursor:pointer; transition: transform .2s ease, box-shadow .2s ease; }
+button:hover { transform: translateY(-2px); }
+.site-nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(16px); background: rgba(16,19,33,.78); border-bottom: 1px solid rgba(255,225,210,.08); }
+.brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; margin-right: 9px; border-radius: 8px; background: #ff7043; color: #101321; font-size: 13px; transform: rotate(-12deg); }
+.nav-link { transition: color .18s ease; } .nav-link:hover { color: #ff9b78; }
+.hero-art { isolation: isolate; background: radial-gradient(circle at 64% 35%, rgba(255,112,67,.62), transparent 6%), radial-gradient(circle at 20% 90%, rgba(88,68,142,.7), transparent 32%), linear-gradient(145deg, #393e62, #171a2b 62%); }
+.hero-art::after { content: 'PEAK'; position: absolute; z-index: -1; right: -18px; bottom: -48px; color: rgba(255,237,228,.055); font: 400 185px/.8 'Bebas Neue', sans-serif; letter-spacing: .01em; }
+.hero-number { text-shadow: 0 0 30px rgba(255,112,67,.34); }
+.stat-line { border-left: 1px solid rgba(255,155,120,.5); padding-left: 14px; }
+.section-kicker { display: inline-flex; align-items: center; gap: 8px; } .section-kicker::before { content: ''; width: 22px; height: 1px; background: currentColor; }
+.service-tile { transition: transform .2s ease, background .2s ease, border-color .2s ease; } .service-tile:hover { transform: translateX(7px); background: #ff7043; border-color: #ff7043; }
+.service-tile:hover span { color: #101321 !important; }
+.plan-card { position: relative; overflow: hidden; } .plan-card::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(130deg, rgba(255,255,255,.07), transparent 30%); }
+.equipment-card { position: relative; overflow: hidden; } .equipment-card::before { content: '01'; position: absolute; right: 22px; top: 18px; color: rgba(255,112,67,.15); font: 400 105px/.8 'Bebas Neue', sans-serif; }
+@media (max-width: 640px) { .shell { padding: 0 18px; } .hero-art::after { font-size: 118px; } }
