@@ -7,7 +7,7 @@ export default function Home() {
   useEffect(() => { supabase.from('stories').select('id,title,body,pen_name,created_at').eq('status', 'approved').order('created_at', { ascending: false }).then(({ data }) => setL(data || [])) }, [])
   return (
     <main><h1>Real stories. Real lives.</h1>
-      <p className="sub">Read the experiences of people in their own words, or share yours anonymously.</p>
+      <p className="sub">Read the experiences of LGBTQ people in their own words, or share yours anonymously.</p>
       <Link className="btn" href="/write">Share your story</Link><h2>Latest stories</h2>
       {l === null && <p className="sub">Loading…</p>}{l && !l.length && <p className="sub">No stories yet.</p>}
       {l?.map(s => <Link key={s.id} href={`/story/${s.id}`} style={{ textDecoration: 'none', color: 'inherit' }}><div className="card"><h3>{s.title}</h3>
